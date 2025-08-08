@@ -1,0 +1,21 @@
+# ---- Generated files ----
+node_modules
+
+# ---- Build files ----
+*.buildinfo
+dist
+
+# ---- Editors ----
+*~
+.\#*\#
+.\#*
+auto-save-list/
+.vscode
+.idea
+.cursor
+
+# ---- OS ----
+.DS_Store
+
+# ---- Misc ----
+*.log
