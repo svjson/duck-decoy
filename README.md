@@ -1,11 +1,27 @@
 # Duck Decoy
 
-[![GitHub repo](https://img.shields.io/badge/github-svjson%2Fheed-blue?logo=github)](https://github.com/svjson/duck-decoy)
+[![GitHub](https://img.shields.io/badge/GitHub-svjson%2Fduck--decoy-blue?logo=github)](https://github.com/svjson/duck-decoy)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Node](https://img.shields.io/node/v/heedjs)](https://www.npmjs.com/package/heedjs)
 
-> Simple HTTP mocks and fakes
+> Simple HTTP mocks and fakes - *spin up fake APIs with minimum effort.*
 
+## What is Duck Decoy?
+
+Duck Decoy lets you stand up HTTP services that behave like the real thing - but are entirely fake - using just configuration.  
+
+**You can:**
+
+- Define endpoints and responses in plain JS/TS objects
+- Use static or dynamic responses
+- Simulate latency, errors, and state changes
+- Prototype or test integrations without a real backend
+
+**Perfect for:**
+
+- **Frontend development** without waiting for backend readiness
+- **Integration testing** without hitting live systems
+- **Demonstrations** and API simulations
 
 
 ## Duck Decoy? What ducks?
