@@ -19,6 +19,6 @@
     "test": "npm run --workspaces test --if-present",
     "test:unit": "npm run --workspaces test:unit",
     "test:e2e": "npm run --workspaces test:e2e --if-present",
-    "test:typecheck": "npn run --workspaces typecheck"
+    "typecheck": "npm run --workspaces typecheck --if-present"
   }
 }
