@@ -3,6 +3,10 @@ import { StateEndpointsConfiguration } from './state'
 import { buildRoutes } from './endpoint'
 import { DuckDecoyHttpTransport, DuckDecoyRequest, resolveHttpTransport } from './http'
 
+/**
+ * Configuration type specifying the the behavior, state and shape of
+ * of a DuckDecoy instance.
+ */
 interface DuckDecoyServerConfigParams<State extends Object> {
   impl: DuckDecoyHttpTransport
   root: string
@@ -14,7 +18,7 @@ interface DuckDecoyServerConfigParams<State extends Object> {
 
 /**
  * Configuration type specifying the the behavior, state and shape of
- * of a DuckDecoy instance.
+ * of a DuckDecoy instance with optional properties.
  */
 type DuckDecoyServerConfig<State extends Object> = {
   impl?: string | DuckDecoyHttpTransport
@@ -26,6 +30,19 @@ type DuckDecoyServerConfig<State extends Object> = {
   autostart?: boolean
 }
 
+/**
+ * Log an incoming request to the `requestLog` of a DecoyServer
+ * instance.
+ *
+ * Returns the logged entry, allowing the logging handler to encode
+ * response information once the response has been handled.
+ *
+ * @param dd - The DecoyServer instance to log the request to
+ * @param route - The RouteDef that the request is being logged for
+ * @param req - The DuckDecoyRequest that is being logged
+ *
+ * @return The logged RequestLogEntry
+ */
 export const logRequest = (
   dd: DecoyServer<any>,
   route: RouteDef<any>,
@@ -43,6 +60,20 @@ export const logRequest = (
   return logEntry
 }
 
+/**
+ * Re-shape a `DuckDecoyServerConfig`, which allows most configuration
+ * properties to be omitted, into an instance of
+ * `DuckDecoyServerConfigParams` with concrete values for all properties.
+ *
+ * This is used to ensure that the server can be constructed
+ * with all required properties and keep ifs and buts to a minimum when
+ * DecoyServer inspects its configuration.
+ *
+ * @param config - The DuckDecoyServerConfig to materialize
+ *
+ * @return A DuckDecoyServerConfigParams with all properties set
+ * with concrete values.
+ */
 const materializeConfiguration = async <State extends Object>(
   config: DuckDecoyServerConfig<State>
 ): Promise<DuckDecoyServerConfigParams<State>> => {
@@ -60,7 +91,7 @@ const configureRoutes = <State extends Object>(
   instance: DecoyServer<State>,
   routes: RouteDef<State>[]
 ) => {
-  const { impl, root, requestLog, state } = instance
+  const { impl } = instance
   for (const route of routes) {
     impl.registerRoute(route, instance)
   }
@@ -74,12 +105,44 @@ const configureEndpoints = <State>(
   configureRoutes(instance, routes)
 }
 
+/**
+ * Public interface of a Duck Decoy Server.
+ *
+ * This class wires up a configuration of routes and state over
+ * the supplied HTTP transport implementation.
+ *
+ * Routes are registered and assembled from the configuration object
+ * upon construction.
+ *
+ * It also maintains a request log for inspection and verification of
+ * interactions.
+ */
 export class DecoyServer<State extends Object> {
+  /**
+   * The HTTP transport implementation, e.g, Fastify or Koa
+   */
   impl: DuckDecoyHttpTransport
+  /**
+   * The port number that the server runs on.
+   */
   port: number
+  /**
+   * The URI root where the API consisting of the configured endpoints
+   * is exposed. e.g '/api'.
+   */
   root: string
+  /**
+   * The server URL
+   */
   url: string
+  /**
+   * The mock/fake state
+   */
   state: State
+  /**
+   * Log containing received and handled requests, globally and per
+   * endpoint.
+   */
   requestLog: RequestLog
 
   constructor(config: DuckDecoyServerConfigParams<State>) {
@@ -108,8 +171,8 @@ export class DecoyServer<State extends Object> {
 }
 
 /**
- * Create a "fake" HTTP service and start it on a random available
- * port.
+ * Create a "fake" HTTP service and start it on a specific or randomly
+ * selected available port.
  *
  * Allows simple definition of fake and mock endpoints by providing
  * any number of `RouteDef` endpoints.
