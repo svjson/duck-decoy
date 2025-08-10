@@ -10,18 +10,22 @@ describe('Decoy Server', () => {
   HTTP_ADAPTERS.forEach((transport) => {
     describe(`${transport.name} - CRUD Endpoints`, () => {
       describe('Zero Config CRUD Endpoint', { sequential: true }, () => {
-        let server: DecoyServer<any> | null
-        let client: TestHttpClient | null
+        let server: DecoyServer<any>
+        let client: TestHttpClient
 
         beforeAll(async () => {
           server = await makeDecoyServer({
-            impl: transport,
+            impl: new transport(),
             autostart: true,
             endpoints: {
               species: ANIMAL_SPECIES_RECORDS,
             },
           })
           client = await makeTestClient(server)
+        })
+
+        afterAll(async () => {
+          await server.shutdown()
         })
 
         ANIMAL_SPECIES_RECORDS.forEach((record) => {

@@ -4,7 +4,6 @@ import {
   DuckDecoyRequest,
   DuckDecoyResponse,
   DuckDecoyHttpTransport,
-  RequestLogEntry,
   RouteDef,
   logRequest,
   HttpServerStartOptions,

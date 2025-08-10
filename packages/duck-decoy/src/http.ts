@@ -52,11 +52,6 @@ const isHttpTransportInstance = (candidate: any) => {
   return false
 }
 
-const isHttpTransportClass = (candidate: any) => {
-  if (typeof candidate === 'function') return true
-  return false
-}
-
 export const resolveHttpTransport = async (
   configValue: string | undefined | DuckDecoyHttpTransport | Function
 ): Promise<DuckDecoyHttpTransport> => {

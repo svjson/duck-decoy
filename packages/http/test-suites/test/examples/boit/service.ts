@@ -3,7 +3,7 @@ import { createHmac } from 'node:crypto'
 import { datesBetween, DuckDecoyHttpTransport, makeDecoyServer } from 'duck-decoy'
 
 import { boitState, PSK } from './state'
-import { BoITBooking, BoITResourceGroup } from './types'
+import { BoITBooking, BoITResourceGroup, BoITTimeSlot } from './types'
 
 export const generateHash = (psk: string, parts: string[]) => {
   const signature = createHmac('sha1', psk).update(parts.join('')).digest()
@@ -100,11 +100,16 @@ export const makeBoITService = async (transport: DuckDecoyHttpTransport) => {
               Locations: [] as any[],
             }
 
-            const categoryResources = payload.filter((r) => r.categoryId === categoryId)
-            const locationIds = categoryResources.reduce((ids, resource) => {
-              if (!ids.includes(resource.locationId)) ids.push(resource.locationId)
-              return ids
-            }, [])
+            const categoryResources = payload.filter(
+              (r: BoITResourceGroup) => r.categoryId === categoryId
+            )
+            const locationIds = categoryResources.reduce(
+              (ids: number[], resource: BoITResourceGroup) => {
+                if (!ids.includes(resource.locationId)) ids.push(resource.locationId)
+                return ids
+              },
+              [] as number[]
+            )
 
             for (const locationId of locationIds) {
               const location = await state.locations.findOne(locationId)
@@ -115,7 +120,7 @@ export const makeBoITService = async (transport: DuckDecoyHttpTransport) => {
               }
 
               const locationGroups = categoryResources.filter(
-                (r) => r.locationId === locationId
+                (r: BoITResourceGroup) => r.locationId === locationId
               )
               for (const group of locationGroups) {
                 locationEntry.Groups.push({
@@ -151,14 +156,17 @@ export const makeBoITService = async (transport: DuckDecoyHttpTransport) => {
       '/GetCalendarData': {
         handler: async ({ request, response, state }) => {
           const { DateFrom, DateTo, Groups } = request.queryParameters
-          const groupIds = JSON.parse(Groups).map((id) => parseInt(id))
+          const groupIds = JSON.parse(Groups).map((id: string) => parseInt(id))
 
           const groups = await state.resourceGroups.find({ id: { in: groupIds } })
 
-          const slotConfigIds = groups.reduce((ids, group) => {
-            if (!ids.includes(group.slotConfigId)) ids.push(group.slotConfigId)
-            return ids
-          }, [])
+          const slotConfigIds = groups.reduce(
+            (ids: number[], group: BoITResourceGroup) => {
+              if (!ids.includes(group.slotConfigId)) ids.push(group.slotConfigId)
+              return ids
+            },
+            []
+          )
 
           const intervalPatterns = [] as any[]
           for (let i = 0; i < slotConfigIds.length; i++) {
@@ -166,7 +174,7 @@ export const makeBoITService = async (transport: DuckDecoyHttpTransport) => {
             const slotConfig = await state.timeSlotConfigs.findOne(slotConfigId)
             intervalPatterns.push({
               Id: slotConfig.id,
-              Intervals: slotConfig.slots.map((s, i) => ({
+              Intervals: slotConfig.slots.map((s: BoITTimeSlot, i: number) => ({
                 PassNo: i,
                 StartTime: s.StartTime,
                 LengthInMinutes: s.duration,
@@ -187,7 +195,7 @@ export const makeBoITService = async (transport: DuckDecoyHttpTransport) => {
               day.DayGroups.push({
                 GroupId: group.id,
                 IntervalPatternId: group.slotConfigId,
-                BookablePasses: slotConfig.slots.map((_, i) => ({
+                BookablePasses: slotConfig.slots.map((_: any, i: number) => ({
                   No: i,
                 })),
                 CustomerBookings: [],
@@ -205,8 +213,7 @@ export const makeBoITService = async (transport: DuckDecoyHttpTransport) => {
       },
       '/Book': {
         handler: async ({ request, response, state }) => {
-          const { customerId, MaxWaitSeconds, GroupId, StartTimeStamp, LengthInMinutes } =
-            request.queryParameters
+          const { customerId, GroupId, StartTimeStamp } = request.queryParameters
 
           const error = () => response.status(500).body()
 
@@ -219,7 +226,9 @@ export const makeBoITService = async (transport: DuckDecoyHttpTransport) => {
           const slotConfig = await state.timeSlotConfigs.findOne(group.slotConfigId)
           if (!slotConfig) return error()
 
-          const slotIndex = slotConfig.slots.find((slot) => slot.StartTime === time)
+          const slotIndex = slotConfig.slots.find(
+            (slot: BoITTimeSlot) => slot.StartTime === time
+          )
           if (slotIndex === undefined) return error()
 
           const existing = await state.bookings.findOne({

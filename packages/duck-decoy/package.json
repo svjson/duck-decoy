@@ -17,7 +17,7 @@
   "scripts": {
     "build": "npm run typecheck && vite build",
     "ci:test": "vitest run --reporter=dot --no-color",
-    "lint": "eslint .",
+    "lint": "npx eslint .",
     "test": "vitest run --reporter verbose",
     "test:unit": "vitest run test/unit --reporter verbose",
     "test:e2e": "vitest run test/e2e --reporter verbose",
@@ -38,7 +38,12 @@
   },
   "devDependencies": {
     "axios": "^1.11.0",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-n": "^17.21.3",
     "prettier": "^3.6.2",
+    "typescript-eslint": "^8.39.0",
     "vite-plugin-dts": "^4.5.4",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"

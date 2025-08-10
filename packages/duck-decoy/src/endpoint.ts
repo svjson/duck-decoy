@@ -5,7 +5,7 @@ import {
   EndpointResponseFormatter,
 } from './state'
 import { EndpointHandler, HttpMethod, RouteDef } from './types'
-import { ArrayCollection, RecordCollection } from './collection'
+import { ArrayCollection } from './collection'
 import { ResourceRouteBuilder } from './resource'
 
 /**
