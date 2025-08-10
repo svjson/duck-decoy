@@ -5,6 +5,7 @@ import {
   RecordCriteria,
 } from './collection'
 import { coerce, IdGenerator, makeAutoIncGenerator } from './identity'
+import { filterQuery, Query } from './query'
 
 interface ArrayCollectionConfiguration<IdentityKey, None> {
   identity: IdentityKey
@@ -22,14 +23,14 @@ export class ArrayCollection<
   idGenerator: IdGenerator
 
   constructor(
-    records: T[],
+    records?: T[],
     config?: {
       identity: IdentityKey
       none?: None
     }
   ) {
     super()
-    this.records = [...records]
+    this.records = [...(records ?? [])]
     this.config = {
       identity: (config?.identity ?? 'id') as IdentityKey,
       none: config?.none!,
@@ -59,17 +60,23 @@ export class ArrayCollection<
     return match
   }
 
-  async insert(record: WithoutIdentity<T, IdentityKey>): Promise<T> {
-    const newRecord: T = {
-      ...record,
-      [this.config.identity]: (await this.idGenerator.next()) as IdentityType,
-    } as T
+  async insert(record: T | WithoutIdentity<T, IdentityKey>): Promise<T> {
+    const newRecord: T = Object.keys(record as any).includes(this.identity as string)
+      ? (record as T)
+      : ({
+          ...record,
+          [this.config.identity]: (await this.idGenerator.next()) as IdentityType,
+        } as T)
     this.records.push(newRecord)
     return newRecord
   }
 
-  async find() {
-    return this.records
+  async find(query?: Query<T> | RecordCriteria<T>) {
+    if (query === undefined || query === null) {
+      return this.records
+    }
+
+    return filterQuery(this.records, query as Query<T>)
   }
 
   private async findByCriteria(

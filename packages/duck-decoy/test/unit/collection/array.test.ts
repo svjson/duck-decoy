@@ -29,6 +29,17 @@ describe('ArrayCollection', () => {
       // Then
       expect(result).toEqual(ANIMAL_SPECIES_RECORDS)
     })
+
+    it('should return all elements matching equals query', async () => {
+      // Given
+      const coll = new ArrayCollection(ANIMAL_SPECIES_RECORDS)
+
+      // When
+      const result = await coll.find({ legs: 4 })
+
+      // Then
+      expect(result).toHaveLength(3)
+    })
   })
 
   describe('findOne', () => {
@@ -77,7 +88,7 @@ describe('ArrayCollection', () => {
     })
   })
 
-  describe('postOne', () => {
+  describe('insert', () => {
     it('should append a new record and assign a new identity according to id generator', async () => {
       // Given
       const coll = new ArrayCollection(ANIMAL_SPECIES_RECORDS)
@@ -99,6 +110,27 @@ describe('ArrayCollection', () => {
         class: 'Mammalia',
         diet: 'Omnivore',
         legs: 4,
+      })
+    })
+
+    it('should append a new record as if is the identity is provided', async () => {
+      // Given
+      interface AuthToken {
+        token: string
+        userId: string
+      }
+      const coll = new ArrayCollection<AuthToken, 'token'>([], { identity: 'token' })
+
+      // When
+      const inserted = await coll.insert({
+        token: 'ABCDEFGH',
+        userId: 'Kenny',
+      })
+
+      expect(coll.records.length).toBe(1)
+      expect(inserted).toEqual({
+        token: 'ABCDEFGH',
+        userId: 'Kenny',
       })
     })
   })

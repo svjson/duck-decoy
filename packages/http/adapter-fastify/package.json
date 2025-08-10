@@ -1,0 +1,26 @@
+{
+  "name": "@duck-decoy/fastify",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "npm run typecheck && vite build",
+    "typecheck": "tsc --noEmit"
+  },
+  "export": {
+
+  },
+  "dependencies": {
+    "fastify": "^5.4.0",
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/session": "^11.1.0"
+  }
+}

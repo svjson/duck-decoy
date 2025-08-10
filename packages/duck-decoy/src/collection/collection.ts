@@ -1,6 +1,10 @@
+import { Query } from './query'
+
 export type WithoutIdentity<T, I extends keyof T> = Omit<T, I>
 
 export type DefaultRecordKey<T> = 'id' extends keyof T ? 'id' : never
+
+export type RecordCriteria<Identity> = Identity
 
 /**
  * Abstract base for RecordCollection.
@@ -16,8 +20,8 @@ export abstract class RecordCollection<
 > {
   abstract count(): Promise<number>
   abstract deleteOne(criteria: RecordCriteria<IdentityType>): Promise<T | None>
-  abstract insert(record: WithoutIdentity<T, IdentityKey>): Promise<T>
-  abstract find(): Promise<T[]>
+  abstract insert(record: T | WithoutIdentity<T, IdentityKey>): Promise<T>
+  abstract find(query?: Query<T> | RecordCriteria<T>): Promise<T[]>
   abstract findOne(criteria: RecordCriteria<IdentityType>): Promise<T | None>
   abstract updateOne(
     criteria: RecordCriteria<IdentityType>,
@@ -26,5 +30,3 @@ export abstract class RecordCollection<
   abstract get identity(): IdentityKey
   abstract get none(): None
 }
-
-export type RecordCriteria<Identity> = Identity

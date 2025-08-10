@@ -1,0 +1,15 @@
+{
+  "name": "@duck-decoy/http-test-suites",
+  "private": true,
+  "scripts": {
+    "ci:test": "vitest run --reporter=dot --no-color",
+    "lint": "eslint .",
+    "test": "vitest run --reporter verbose",
+    "test:e2e": "npm run test"
+  },
+  "devDependencies": {
+    "duck-decoy": "*",
+    "@duck-decoy/fastify": "*",
+    "vitest": "^3.2.4"
+  }
+}

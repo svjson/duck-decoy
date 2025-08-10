@@ -24,51 +24,52 @@ const RESOURCE_HANDLER_FACTORY_FUNCTIONS: Record<HttpMethod, ResourceHandlerDecl
     GET: {
       all:
         ({ collection }: ResourceHandlerInputs<any, any, any, any>) =>
-        async ({ reply }: EndpointHandlerParams): Promise<void> => {
-          reply.code(200).send(await collection.find())
+        async ({ response }: EndpointHandlerParams): Promise<void> => {
+          response.status(200).body(await collection.find())
         },
       identity:
         ({ collection }: ResourceHandlerInputs<any, any, any, any>) =>
-        async ({ req, reply }: EndpointHandlerParams): Promise<void> => {
+        async ({ request, response }: EndpointHandlerParams): Promise<void> => {
           const result = await collection.findOne(
-            (req.params as any)?.[collection.identity]
+            request.pathParameters[collection.identity]
           )
           if (result === undefined) {
-            reply.code(404).send(collection.none)
+            response.status(404).body(collection.none)
           } else {
-            reply.code(200).send(result)
+            response.status(200).body(result)
           }
         },
     },
     PUT:
       <R, K extends keyof R, I, N>({ collection }: ResourceHandlerInputs<R, K, I, N>) =>
-      async ({ req, reply }) => {
+      async ({ request, response }) => {
         const updated = await collection.updateOne(
-          (req.params as any)[collection.identity],
-          req.body as WithoutIdentity<R, K>
+          (request.pathParameters as any)[collection.identity],
+          request.body as WithoutIdentity<R, K>
         )
         if (updated) {
-          reply.code(200).send(updated)
+          response.status(200).body(updated)
         } else {
-          reply.code(404).send()
+          response.status(404).body()
         }
       },
     POST:
       <R, K extends keyof R, I, N>({ collection }: ResourceHandlerInputs<R, K, I, N>) =>
-      async ({ req, reply }) => {
-        const created = await collection.insert(req.body as WithoutIdentity<R, K>)
-        reply.code(201).send(created)
+      async ({ request, response }) => {
+        const created = await collection.insert(request.body as WithoutIdentity<R, K>)
+        response.status(201).body(created)
       },
     DELETE:
       <R, K extends keyof R, I, N>({ collection }: ResourceHandlerInputs<R, K, I, N>) =>
-      async ({ req, reply }) => {
+      async ({ request, response }) => {
         const deleted = await collection.deleteOne(
-          (req.params as any)[collection.identity]
+          (request.pathParameters as any)[collection.identity]
         )
         if (deleted) {
-          reply.code(204).send()
+          response.status(204).body()
+        } else {
+          response.status(404).body()
         }
-        reply.code(404).send()
       },
     HEAD: () => {
       throw 'HEAD is not implemented.'
