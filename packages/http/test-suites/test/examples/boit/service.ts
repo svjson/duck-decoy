@@ -23,6 +23,24 @@ export const makeBoITService = async (transport: DuckDecoyHttpTransport) => {
     autostart: true,
     root: '/bookingservice/bookingservice.svc',
     state: boitState,
+    preHandlers: [
+      {
+        exclude: ['/Login'],
+        handler: async ({ request, response, state }) => {
+          const { Token } = request.queryParameters
+          const auth = Token ? await state.validTokens.findOne(Token) : null
+
+          if (auth) {
+            request.context['customerId'] = auth.customerId
+            request.context['resources'] = (await state.customers.findOne(
+              auth.customerId
+            ))!.resources
+          } else {
+            await response.status(401).body().encode()
+          }
+        },
+      },
+    ],
     endpoints: {
       '/Login': async ({ request, response, state }) => {
         // FIXME: Validate hash
@@ -69,14 +87,9 @@ export const makeBoITService = async (transport: DuckDecoyHttpTransport) => {
           return result
         },
         handler: async ({ request, response, state }) => {
-          const auth = await state.validTokens.findOne(request.queryParameters.Token)
-          if (auth?.customerId) {
-            response
-              .status(200)
-              .body(await state.bookings.find({ customerId: auth.customerId }))
-          } else {
-            response.status(401).body()
-          }
+          response
+            .status(200)
+            .body(await state.bookings.find({ customerId: request.context.customerId }))
         },
       },
       '/GetCustomerResources': {
@@ -139,18 +152,11 @@ export const makeBoITService = async (transport: DuckDecoyHttpTransport) => {
           return result
         },
         handler: async ({ request, response, state }) => {
-          const auth = await state.validTokens.findOne(request.queryParameters.Token)
-          if (auth?.customerId) {
-            const customer = await state.customers.findOne(auth.customerId)
-
-            response.status(200).body(
-              await state.resourceGroups.find({
-                id: { in: customer.resources },
-              })
-            )
-          } else {
-            response.status(401).body()
-          }
+          response.status(200).body(
+            await state.resourceGroups.find({
+              id: { in: request.context.resources },
+            })
+          )
         },
       },
       '/GetCalendarData': {

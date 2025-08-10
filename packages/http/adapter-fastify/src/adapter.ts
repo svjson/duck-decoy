@@ -6,9 +6,13 @@ import {
   DuckDecoyHttpTransport,
   RouteDef,
   logRequest,
+  preHandlerEnabled,
   HttpServerStartOptions,
 } from 'duck-decoy'
 
+/**
+ * Fastify-implementation of `DuckDecoyHttpTransport`
+ */
 export class DuckDecoyFastify implements DuckDecoyHttpTransport {
   name = 'fastify'
   fastify: FastifyInstance
@@ -39,6 +43,20 @@ export class DuckDecoyFastify implements DuckDecoyHttpTransport {
         const ddResponse = new FastifyDDResponse(reply)
         const logEntry = logRequest(dd, route, ddRequest)
         try {
+          for (const preHandler of dd.preHandlers) {
+            if (preHandlerEnabled(preHandler, route.path)) {
+              await preHandler.handler({
+                request: ddRequest,
+                response: ddResponse,
+                state: dd.state,
+              })
+
+              if (ddResponse.isEncoded()) {
+                return
+              }
+            }
+          }
+
           await route.handler({
             request: ddRequest,
             response: ddResponse,
@@ -94,5 +112,6 @@ export class FastifyDDResponse extends DuckDecoyResponse {
 
   async encode() {
     this.reply.code(this._code ?? 200).send(this._body)
+    this.encoded = true
   }
 }

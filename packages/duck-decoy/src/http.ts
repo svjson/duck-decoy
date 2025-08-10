@@ -24,6 +24,8 @@ export interface DuckDecoyHttpTransport {
  * Each Http Transport Provider is required to implement this class.
  */
 export abstract class DuckDecoyRequest {
+  context: Record<string, any> = {}
+
   abstract get body(): any
   abstract get pathParameters(): Record<string, string>
   abstract get queryParameters(): Record<string, string>
@@ -40,6 +42,7 @@ export abstract class DuckDecoyRequest {
 export abstract class DuckDecoyResponse {
   _code: number | undefined
   _body: any | undefined
+  protected encoded: boolean = false
 
   status(code: number): DuckDecoyResponse {
     this._code = code
@@ -49,6 +52,10 @@ export abstract class DuckDecoyResponse {
   body(body?: any): DuckDecoyResponse {
     this._body = body
     return this
+  }
+
+  isEncoded(): boolean {
+    return this.encoded
   }
 
   abstract encode(): Promise<void>

@@ -1,4 +1,10 @@
-export { createFakeServer, makeDecoyServer, DecoyServer, logRequest } from './server'
+export {
+  createFakeServer,
+  makeDecoyServer,
+  DecoyServer,
+  logRequest,
+  preHandlerEnabled,
+} from './server'
 export type { RouteDef, RequestLog, RequestLogEntry } from './types'
 export { datesBetween } from './types'
 export {

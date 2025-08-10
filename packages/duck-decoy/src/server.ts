@@ -1,4 +1,4 @@
-import { RequestLog, RequestLogEntry, RouteDef } from './types'
+import { RequestLog, RequestLogEntry, RequestPreHandler, RouteDef } from './types'
 import { StateEndpointsConfiguration } from './state'
 import { buildRoutes } from './endpoint'
 import { DuckDecoyHttpTransport, DuckDecoyRequest, resolveHttpTransport } from './http'
@@ -11,6 +11,7 @@ interface DuckDecoyServerConfigParams<State extends Object> {
   impl: DuckDecoyHttpTransport
   root: string
   state: State
+  preHandlers: RequestPreHandler<State>[]
   endpoints: StateEndpointsConfiguration<State>
   routes: RouteDef<State>[]
   port: number
@@ -24,6 +25,7 @@ type DuckDecoyServerConfig<State extends Object> = {
   impl?: string | DuckDecoyHttpTransport
   root?: string
   state?: State
+  preHandlers?: RequestPreHandler<State>[]
   endpoints?: StateEndpointsConfiguration<State>
   routes?: RouteDef<State>[]
   port?: number
@@ -81,6 +83,7 @@ const materializeConfiguration = async <State extends Object>(
     impl: await resolveHttpTransport(config.impl),
     root: config.root ?? '',
     state: config.state ?? ({} as State),
+    preHandlers: config.preHandlers ?? [],
     endpoints: config.endpoints ?? {},
     routes: config.routes ?? [],
     port: typeof config.port === 'number' ? config.port : 0,
@@ -103,6 +106,18 @@ const configureEndpoints = <State>(
 ) => {
   const routes = buildRoutes(endpoints)
   configureRoutes(instance, routes)
+}
+
+export const preHandlerEnabled = (preHandler: RequestPreHandler<any>, uri: string) => {
+  if (Array.isArray(preHandler.include) && !preHandler.include.includes(uri)) {
+    return false
+  }
+
+  if (Array.isArray(preHandler.exclude) && preHandler.exclude.includes(uri)) {
+    return false
+  }
+
+  return true
 }
 
 /**
@@ -140,6 +155,11 @@ export class DecoyServer<State extends Object> {
    */
   state: State
   /**
+   *
+   */
+  preHandlers: RequestPreHandler<State>[]
+
+  /**
    * Log containing received and handled requests, globally and per
    * endpoint.
    */
@@ -151,6 +171,7 @@ export class DecoyServer<State extends Object> {
     this.root = config.root
     this.requestLog = { all: [], byRouteId: {} }
     this.state = config.state
+    this.preHandlers = config.preHandlers
     this.url = ''
     configureEndpoints(this, config.endpoints)
     configureRoutes(this, config.routes ?? [])

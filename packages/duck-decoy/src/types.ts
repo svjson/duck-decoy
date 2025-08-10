@@ -36,6 +36,16 @@ export type RouteDef<State = unknown> = {
   responseFormatter?: EndpointResponseFormatter<State>
 }
 
+export type RequestPreHandlerFunction<State> = (
+  params: EndpointHandlerParams<State>
+) => Promise<void>
+
+export interface RequestPreHandler<State> {
+  include?: string[]
+  exclude?: string[]
+  handler: RequestPreHandlerFunction<State>
+}
+
 /**
  * Request log for fake http servers. Stores recorded request entries
  * both in a flat array and grouped by routeId for easier access.
