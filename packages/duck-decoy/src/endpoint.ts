@@ -51,7 +51,7 @@ const buildCRUDRoutes = (uri: string, records: any[]): RouteDef<any>[] => {
 const makeEndpoint = <State>(
   method: HttpMethod,
   uri: string,
-  handler: EndpointHandler,
+  handler: EndpointHandler<State>,
   opts: {
     responseFormatter?: EndpointResponseFormatter<State>
   } = {}
@@ -85,13 +85,13 @@ const makeEndpoint = <State>(
 const buildDeclaredEndpointRoutes = <State>(
   uri: string,
   declaration: EndpointConfiguration<State>
-): RouteDef<any>[] => {
+): RouteDef<State>[] => {
   if (Array.isArray(declaration)) {
     return buildCRUDRoutes(uri, declaration)
   }
 
   if (typeof declaration === 'function') {
-    return [makeEndpoint('GET', uri, declaration as EndpointHandler)]
+    return [makeEndpoint('GET', uri, declaration as EndpointHandler<State>)]
   }
 
   if (
@@ -101,7 +101,7 @@ const buildDeclaredEndpointRoutes = <State>(
   ) {
     const decl = declaration as EndpointDeclaration<State>
     return [
-      makeEndpoint(decl.method ?? 'GET', uri, decl.handler, {
+      makeEndpoint<State>(decl.method ?? 'GET', uri, decl.handler, {
         responseFormatter: decl.formatter,
       }),
     ]
@@ -122,7 +122,7 @@ const buildDeclaredEndpointRoutes = <State>(
  * @return An array of `RouteDef` instances representing all routes
  */
 export const buildRoutes = <State>(endpoints: StateEndpointsConfiguration<State>) => {
-  const routes: RouteDef<any>[] = []
+  const routes: RouteDef<State>[] = []
   for (const [uri, declaration] of Object.entries(endpoints)) {
     const declaredRoutes = buildDeclaredEndpointRoutes(uri, declaration)
     routes.push(...declaredRoutes)

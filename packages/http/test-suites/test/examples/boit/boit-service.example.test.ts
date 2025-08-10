@@ -8,7 +8,7 @@ import { PSK, CUSTOMER_ID_1, CUSTOMER_ID_2, CUSTOMER_ID_3 } from './state'
 import { generateHash, makeBoITService } from './service'
 
 HTTP_ADAPTERS.forEach((transport) => {
-  describe(`${transport.name} - BoIT Service Example`, () => {
+  describe.sequential(`${transport.name} - BoIT Service Example`, () => {
     let service: DecoyServer<any>
     let client: TestHttpClient
 
@@ -339,7 +339,7 @@ HTTP_ADAPTERS.forEach((transport) => {
           Days: [
             {
               Date: '2025-08-10',
-              NumberOfCustomerBookings: 0,
+              NumberOfCustomerBookings: 1,
               DayGroups: [
                 {
                   GroupId: 432,
@@ -361,7 +361,13 @@ HTTP_ADAPTERS.forEach((transport) => {
                       No: 4,
                     },
                   ],
-                  CustomerBookings: [],
+                  CustomerBookings: [
+                    {
+                      BookingId: 15,
+                      PassNo: 2,
+                      Unbookable: true,
+                    },
+                  ],
                 },
               ],
             },
@@ -427,6 +433,7 @@ HTTP_ADAPTERS.forEach((transport) => {
         })
       })
     })
+
     describe('/Book', () => {
       it('should respond with booking details when a valid booking is made', async () => {
         // Given
