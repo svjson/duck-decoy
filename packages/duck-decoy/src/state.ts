@@ -25,8 +25,6 @@ export type EndpointConfiguration<State> =
   | EndpointHandler<State>
   | EndpointDeclaration<State>
 
-type AwaitedRet<F> = F extends (...a: any) => infer R ? Awaited<R> : never
-
 /**
  * Type-helper for dynamically constructing a type-safe context during the PayloadBuilder
  * function chain.

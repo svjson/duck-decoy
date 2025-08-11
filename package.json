@@ -2,6 +2,8 @@
   "name": "duck-decoy-root",
   "version": "0.1.0",
   "private": true,
+  "author": "Sven Johansson",
+  "license": "MIT",
   "workspaces": [
     "packages/duck-decoy",
     "packages/http/*"

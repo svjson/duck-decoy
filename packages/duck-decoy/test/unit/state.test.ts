@@ -131,6 +131,15 @@ describe('PayloadBuilder', () => {
             vehicles: vehicles.map((v) => v.name),
           }
         })
+
+      // Then
+      expect(result).toEqual([
+        { category: 'suv', vehicles: ['RAV4', 'Wrangler'] },
+        { category: 'sed', vehicles: ['Civic', 'Model 3'] },
+        { category: 'trk', vehicles: ['F-150'] },
+        { category: 'van', vehicles: ['Sprinter'] },
+        { category: 'atv', vehicles: ['Rancher ATV'] },
+      ])
     })
   })
 })

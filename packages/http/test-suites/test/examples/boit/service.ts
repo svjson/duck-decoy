@@ -9,7 +9,7 @@ import {
 } from 'duck-decoy'
 
 import { boitState, PSK } from './state'
-import { BoITBooking, BoITResourceGroup, BoITTimeSlot } from './types'
+import { BoITTimeSlot } from './types'
 
 export const generateHash = (psk: string, parts: string[]) => {
   const signature = createHmac('sha1', psk).update(parts.join('')).digest()

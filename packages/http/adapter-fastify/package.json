@@ -2,6 +2,10 @@
   "name": "@duck-decoy/fastify",
   "version": "0.1.0",
   "type": "module",
+  "author": "Sven Johansson",
+  "license": "MIT",
+  "files": ["dist", "README.md", "LICENSE"],
+  "publishConfig": { "access": "public" },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -14,6 +18,7 @@
   "scripts": {
     "build": "npm run typecheck && vite build",
     "lint": "npx eslint .",
+    "prepack": "npm run build",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

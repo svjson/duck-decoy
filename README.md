@@ -36,4 +36,3 @@ Two very simple things are behind the choice of the name:
 ## License
 
 © 2025 Sven Johansson. [MIT Licensed](./LICENSE)
-
