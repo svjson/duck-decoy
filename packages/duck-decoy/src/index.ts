@@ -5,13 +5,23 @@ export {
   logRequest,
   preHandlerEnabled,
 } from './server'
-export type { RouteDef, RequestLog, RequestLogEntry } from './types'
-export { datesBetween } from './types'
-export {
-  DuckDecoyResponse,
-  DuckDecoyRequest,
-  type DuckDecoyHttpTransport,
-  type HttpServerStartOptions,
-} from './http'
 export { ArrayCollection, RecordCollection } from './collection'
+export { DuckDecoyResponse, DuckDecoyRequest } from './http'
+export { datesBetween } from './types'
 export { each, from } from './state'
+
+export type {
+  EndpointDeclaration,
+  EndpointConfiguration,
+  EndpointsConfiguration,
+  EndpointHandlerFunction,
+  EndpointResponseFormatter,
+} from './endpoint'
+export type {
+  RequestPreHandler,
+  RequestPreHandlerFunction,
+  RouteDef,
+  RequestLog,
+  RequestLogEntry,
+} from './types'
+export type { DuckDecoyHttpTransport, HttpServerStartOptions } from './http'

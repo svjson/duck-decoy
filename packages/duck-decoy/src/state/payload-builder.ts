@@ -1,30 +1,3 @@
-import { EndpointHandler, HttpMethod } from './types'
-
-export type StateEndpointsConfiguration<State> = Record<
-  string,
-  EndpointConfiguration<State>
->
-
-export interface EndpointResponseFormatterParams<State> {
-  payload?: any
-  state: State
-}
-
-export type EndpointResponseFormatter<State> = (
-  params: EndpointResponseFormatterParams<State>
-) => Promise<void>
-
-export interface EndpointDeclaration<State> {
-  method?: HttpMethod
-  formatter?: EndpointResponseFormatter<State>
-  handler: EndpointHandler<State>
-}
-
-export type EndpointConfiguration<State> =
-  | Object
-  | EndpointHandler<State>
-  | EndpointDeclaration<State>
-
 /**
  * Type-helper for dynamically constructing a type-safe context during the PayloadBuilder
  * function chain.

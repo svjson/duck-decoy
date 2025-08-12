@@ -1,6 +1,6 @@
 import { RequestLog, RequestLogEntry, RequestPreHandler, RouteDef } from './types'
-import { StateEndpointsConfiguration } from './state'
-import { buildRoutes } from './endpoint'
+import { EndpointsConfiguration } from './endpoint'
+import { buildRoutes } from './endpoint/endpoint'
 import { DuckDecoyHttpTransport, DuckDecoyRequest, resolveHttpTransport } from './http'
 
 /**
@@ -12,7 +12,7 @@ interface DuckDecoyServerConfigParams<State extends Object> {
   root: string
   state: State
   preHandlers: RequestPreHandler<State>[]
-  endpoints: StateEndpointsConfiguration<State>
+  endpoints: EndpointsConfiguration<State>
   routes: RouteDef<State>[]
   port: number
 }
@@ -26,7 +26,7 @@ type DuckDecoyServerConfig<State extends Object> = {
   root?: string
   state?: State
   preHandlers?: RequestPreHandler<State>[]
-  endpoints?: StateEndpointsConfiguration<State>
+  endpoints?: EndpointsConfiguration<State>
   routes?: RouteDef<State>[]
   port?: number
   autostart?: boolean
@@ -102,7 +102,7 @@ const configureRoutes = <State extends Object>(
 
 const configureEndpoints = <State>(
   instance: DecoyServer<any>,
-  endpoints: StateEndpointsConfiguration<State>
+  endpoints: EndpointsConfiguration<State>
 ) => {
   const routes = buildRoutes(endpoints)
   configureRoutes(instance, routes)

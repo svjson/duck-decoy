@@ -1,6 +1,8 @@
-import { RecordCollection, WithoutIdentity } from './collection/collection'
+import { RecordCollection, WithoutIdentity } from '../collection/collection'
+import { HttpMethod } from '@src/http'
+import { RouteDef } from '@src/types'
 import { formatUri } from './endpoint'
-import { HttpMethod, RouteDef, EndpointHandlerParams, EndpointHandler } from './types'
+import { EndpointHandlerParams, EndpointHandlerFunction } from './types'
 
 type ResourceIdentifier = 'identity' | 'all'
 type ResourceResultType = 'none' | 'single' | 'list'
@@ -13,7 +15,7 @@ interface ResourceHandlerInputs<R, K extends keyof R, I, N> {
 
 type ResourceHandlerFactoryFunction<R, K extends keyof R, I, N> = (
   inputs: ResourceHandlerInputs<R, K, I, N>
-) => EndpointHandler
+) => EndpointHandlerFunction<any>
 
 type ResourceHandlerDeclaration =
   | Record<ResourceIdentifier, ResourceHandlerFactoryFunction<any, any, any, any>>
@@ -86,7 +88,7 @@ const makeResourceHandler = <R, K extends keyof R, I, N>(
   method: HttpMethod,
   collection: RecordCollection<R, K, I, N>,
   resourceIdentifier: ResourceIdentifier
-): EndpointHandler => {
+): EndpointHandlerFunction<any> => {
   const handlerDeclaration = RESOURCE_HANDLER_FACTORY_FUNCTIONS[method]
   if (typeof handlerDeclaration === 'function') {
     return handlerDeclaration({ method, collection, resourceIdentifier })

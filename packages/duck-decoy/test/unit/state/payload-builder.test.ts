@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { each, from } from '@src/state'
+import { each, from } from '@src/state/payload-builder'
 import {
   VEHICLE_CLASS_RECORDS,
   VEHICLE_RECORDS,

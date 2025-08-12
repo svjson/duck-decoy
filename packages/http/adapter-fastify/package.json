@@ -1,6 +1,7 @@
 {
   "name": "@duck-decoy/fastify",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "description": "Simple HTTP mocks and fakes - running on Fastify",
   "type": "module",
   "author": "Sven Johansson",
   "license": "MIT",
@@ -20,6 +21,10 @@
     "lint": "npx eslint .",
     "prepack": "npm run build",
     "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "duck-decoy": "^0.1.0",
+    "fastify": "^5.4.0"
   },
   "dependencies": {
     "duck-decoy": "*",

@@ -1,29 +1,9 @@
-import { RecordCollection } from './collection/collection'
-import { EndpointResponseFormatter } from './state'
-import { DuckDecoyRequest, DuckDecoyResponse } from './http'
-
-export type HttpMethod = 'GET' | 'PUT' | 'POST' | 'DELETE' | 'HEAD' | 'OPTIONS' | 'PATCH'
-
-export const METHODS: HttpMethod[] = [
-  'GET',
-  'PUT',
-  'POST',
-  'DELETE',
-  'HEAD',
-  'OPTIONS',
-  'PATCH',
-]
-
-export interface EndpointHandlerParams<State = any> {
-  request: DuckDecoyRequest
-  response: DuckDecoyResponse
-  collection?: RecordCollection
-  state: State
-}
-
-export type EndpointHandler<State = any> = (
-  params: EndpointHandlerParams<State>
-) => Promise<void>
+import { HttpMethod } from './http'
+import {
+  EndpointHandlerFunction,
+  EndpointHandlerParams,
+  EndpointResponseFormatter,
+} from './endpoint'
 
 /**
  * Used to define a route in the fake server
@@ -32,7 +12,7 @@ export type RouteDef<State = unknown> = {
   routeId: string
   method: HttpMethod
   path: string
-  handler: EndpointHandler<State>
+  handler: EndpointHandlerFunction<State>
   responseFormatter?: EndpointResponseFormatter<State>
 }
 

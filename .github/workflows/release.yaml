@@ -54,13 +54,14 @@ jobs:
         run: |
           NAME=$(jq -r .name package.json)
           VERSION=$(jq -r .version package.json)
+          PKG="${NAME}@${VERSION}"
 
-          if npv view "${NAME}@${VERSION}" >/dev/null 2>&1; then
-            echo "${NAME}@${VERSION} is already published. Skipping."
+          if npm view "$PKG" >/dev/null 2>&1; then
+            echo "::notice title=Publish skipped::$PKG is already published."
             exit 0
           fi
 
-          echo "Publishing ${NAME}@${VERSION}..."
+          echo "Publishing ${PKG}..."
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

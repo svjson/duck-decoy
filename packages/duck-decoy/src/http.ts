@@ -1,6 +1,18 @@
 import { DecoyServer } from './server'
 import { RouteDef } from './types'
 
+export type HttpMethod = 'GET' | 'PUT' | 'POST' | 'DELETE' | 'HEAD' | 'OPTIONS' | 'PATCH'
+
+export const METHODS: HttpMethod[] = [
+  'GET',
+  'PUT',
+  'POST',
+  'DELETE',
+  'HEAD',
+  'OPTIONS',
+  'PATCH',
+]
+
 /**
  * HttpTransport interface implemented by adapters for actual
  * HTTP libraries, e.g, Fastify

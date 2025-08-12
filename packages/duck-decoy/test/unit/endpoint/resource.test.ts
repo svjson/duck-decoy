@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ResourceRouteBuilder } from '@src/resource'
+import { ResourceRouteBuilder } from '@src/endpoint'
 import { ArrayCollection } from '@src/collection'
 
 describe('ResourceRouteBuilder', () => {

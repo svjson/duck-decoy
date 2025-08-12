@@ -1,11 +1,13 @@
 import {
   EndpointDeclaration,
   EndpointConfiguration,
-  StateEndpointsConfiguration,
+  EndpointsConfiguration,
   EndpointResponseFormatter,
-} from './state'
-import { EndpointHandler, HttpMethod, RouteDef } from './types'
-import { ArrayCollection } from './collection'
+  EndpointHandlerFunction,
+} from './types'
+import { RouteDef } from '../types'
+import { HttpMethod } from '@src/http'
+import { ArrayCollection } from '@src/collection'
 import { ResourceRouteBuilder } from './resource'
 
 /**
@@ -51,7 +53,7 @@ const buildCRUDRoutes = (uri: string, records: any[]): RouteDef<any>[] => {
 const makeEndpoint = <State>(
   method: HttpMethod,
   uri: string,
-  handler: EndpointHandler<State>,
+  handler: EndpointHandlerFunction<State>,
   opts: {
     responseFormatter?: EndpointResponseFormatter<State>
   } = {}
@@ -91,7 +93,7 @@ const buildDeclaredEndpointRoutes = <State>(
   }
 
   if (typeof declaration === 'function') {
-    return [makeEndpoint('GET', uri, declaration as EndpointHandler<State>)]
+    return [makeEndpoint('GET', uri, declaration as EndpointHandlerFunction<State>)]
   }
 
   if (
@@ -121,7 +123,7 @@ const buildDeclaredEndpointRoutes = <State>(
  *
  * @return An array of `RouteDef` instances representing all routes
  */
-export const buildRoutes = <State>(endpoints: StateEndpointsConfiguration<State>) => {
+export const buildRoutes = <State>(endpoints: EndpointsConfiguration<State>) => {
   const routes: RouteDef<State>[] = []
   for (const [uri, declaration] of Object.entries(endpoints)) {
     const declaredRoutes = buildDeclaredEndpointRoutes(uri, declaration)
