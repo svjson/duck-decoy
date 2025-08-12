@@ -7,8 +7,31 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+      - run: npm run build
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - pkg: packages/duck-decoy
+            name: "duck-decoy"
+          - pkg: packages/http/adapter-fastify
+            name: "@duck-decoy/fastify"
     steps:
       - uses: actions/checkout@v4
   
@@ -18,20 +41,27 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
           registry-url: 'https://registry.npmjs.org'
-          
+
       - name: Install dependencies
         run: npm ci
 
       - name: Build
         run: npm run build
 
-      - name: Publish duck-decoy
-        run: npm publish -w packages/duck-decoy --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish ${{ matrix.name }}
+        working-directory: ${{ matrix.pkg }}
+        shell: bash
+        run: |
+          NAME=$(jq -r .name package.json)
+          VERSION=$(jq -r .version package.json)
 
-      - name: Publish @duck-decoy/fastify
-        run: npm publish -w packages/http/adapter-fastify --access public
+          if npv view "${NAME}@${VERSION}" >/dev/null 2>&1; then
+            echo "${NAME}@${VERSION} is already published. Skipping."
+            exit 0
+          fi
+
+          echo "Publishing ${NAME}@${VERSION}..."
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
   
