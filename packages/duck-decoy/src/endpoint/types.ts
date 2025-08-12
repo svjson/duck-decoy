@@ -70,9 +70,13 @@ export interface EndpointResponseFormatterParams<State> {
   state: State
 }
 
+/**
+ * Formatter function interface - post-response function that optionally performs
+ * a last transform pass of the response payload before sending.
+ */
 export type EndpointResponseFormatter<State> = (
   params: EndpointResponseFormatterParams<State>
-) => Promise<void>
+) => Promise<any>
 
 export interface EndpointDeclaration<State> {
   method?: HttpMethod
