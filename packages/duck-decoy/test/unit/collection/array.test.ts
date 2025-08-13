@@ -86,6 +86,43 @@ describe('ArrayCollection', () => {
       // Then
       expect(result).toEqual(ANIMAL_SPECIES_RECORDS.find((r) => r.name === 'Frog'))
     })
+
+    it('should return undefined when no record matches the configured identity property', async () => {
+      // Given
+      const coll = new ArrayCollection(ANIMAL_SPECIES_RECORDS, { identity: 'name' })
+
+      // When
+      const result = await coll.findOne('Kermit')
+
+      // Then
+      expect(result).toBeUndefined()
+    })
+
+    it('should return undefined when no record matches the default identity', async () => {
+      // Given
+      const coll = new ArrayCollection(ANIMAL_SPECIES_RECORDS)
+
+      // When
+      const result = await coll.findOne('Kermit')
+
+      // Then
+      expect(result).toBeUndefined()
+    })
+
+    it('should return undefined if default identity property does not exist', async () => {
+      // Given
+      const coll = new ArrayCollection([
+        {
+          name: 'Klasse Kock',
+        },
+      ])
+
+      // When
+      const result = await coll.findOne('Kermit')
+
+      // Then
+      expect(result).toBeUndefined()
+    })
   })
 
   describe('insert', () => {

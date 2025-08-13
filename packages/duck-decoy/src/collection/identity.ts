@@ -28,5 +28,5 @@ export const coerce = <Type>(fromValue: any, toTypeOf: Type): Type | undefined =
     return String(fromValue) as Type
   }
 
-  return undefined
+  return fromValue
 }
