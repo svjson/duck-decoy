@@ -56,6 +56,10 @@ export abstract class DuckDecoyResponse {
   _body: any | undefined
   protected encoded: boolean = false
 
+  get statusCode(): number | undefined {
+    return this._code
+  }
+
   status(code: number): DuckDecoyResponse {
     this._code = code
     return this

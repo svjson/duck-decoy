@@ -26,27 +26,6 @@ export interface RequestPreHandler<State> {
   handler: RequestPreHandlerFunction<State>
 }
 
-/**
- * Request log for fake http servers. Stores recorded request entries
- * both in a flat array and grouped by routeId for easier access.
- */
-export interface RequestLog {
-  all: RequestLogEntry[]
-  byRouteId: Record<string, RequestLogEntry[]>
-}
-
-/**
- * The format of logged/recorded requests in the `RequestLog` of
- * a fake server.
- */
-export interface RequestLogEntry {
-  routeId: string
-  path: string
-  queryParams: Record<string, string>
-  error?: string
-  statusCode?: number
-}
-
 export const datesBetween = (
   startYMD: string,
   endYMD: string,

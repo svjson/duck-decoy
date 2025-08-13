@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 
 import { HTTP_ADAPTERS } from '../adapters'
 
@@ -28,6 +28,10 @@ describe('Decoy Server', () => {
           await server.shutdown()
         })
 
+        afterEach(async () => {
+          server.reset()
+        })
+
         ANIMAL_SPECIES_RECORDS.forEach((record) => {
           it(`should respond with record with ID=${record.id}("${record.name}") at GET /species/${record.id}`, async () => {
             // When
@@ -36,6 +40,9 @@ describe('Decoy Server', () => {
             // Then
             expect(response.status).toBe(200)
             expect(response.data).toEqual(record)
+
+            expect(server.requestLog.statusCodes()).toEqual([200])
+            expect(server.requestLog.byRouteId('species-GET(id)')).toHaveLength(1)
           })
         })
 
@@ -46,6 +53,9 @@ describe('Decoy Server', () => {
           // Then
           expect(response.status).toBe(404)
           expect(response.data).toBeFalsy()
+
+          expect(server.requestLog.statusCodes()).toEqual([404])
+          expect(server.requestLog.byRouteId('species-GET(id)')).toHaveLength(1)
         })
 
         it('should accept a POST to create a new record at /species', async () => {
@@ -66,6 +76,9 @@ describe('Decoy Server', () => {
             ...payload,
             id: 6,
           })
+
+          expect(server.requestLog.statusCodes()).toEqual([201])
+          expect(server.requestLog.byRouteId('species-POST')).toHaveLength(1)
         })
 
         it('should accept a PUT to update a record at /species/4', async () => {
@@ -86,6 +99,9 @@ describe('Decoy Server', () => {
             ...payload,
             id: 4,
           })
+
+          expect(server.requestLog.statusCodes()).toEqual([200])
+          expect(server.requestLog.byRouteId('species-PUT(id)')).toHaveLength(1)
         })
 
         it('should accept a request to DELETE a record at /species/2', async () => {
@@ -94,6 +110,9 @@ describe('Decoy Server', () => {
 
           // Then
           expect(response.status).toBe(204)
+
+          expect(server.requestLog.statusCodes()).toEqual([204])
+          expect(server.requestLog.byRouteId('species-DELETE(id)')).toHaveLength(1)
         })
 
         it('should now serve the created, updated and remaining records at /species', async () => {
@@ -122,6 +141,9 @@ describe('Decoy Server', () => {
               legs: 4,
             },
           ])
+
+          expect(server.requestLog.statusCodes()).toEqual([200])
+          expect(server.requestLog.byRouteId('species-GET')).toHaveLength(1)
         })
       })
     })

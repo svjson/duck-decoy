@@ -5,7 +5,6 @@ import {
   DuckDecoyResponse,
   DuckDecoyHttpTransport,
   RouteDef,
-  logRequest,
   preHandlerEnabled,
   HttpServerStartOptions,
 } from 'duck-decoy'
@@ -41,7 +40,7 @@ export class DuckDecoyFastify implements DuckDecoyHttpTransport {
       handler: async (req, reply) => {
         const ddRequest = new FastifyDDRequest(req)
         const ddResponse = new FastifyDDResponse(reply)
-        const logEntry = logRequest(dd, route, ddRequest)
+        const logEntry = dd.requestLog.logRequest(ddRequest, route)
         try {
           for (const preHandler of dd.preHandlers) {
             if (preHandlerEnabled(preHandler, route.path)) {
@@ -62,7 +61,7 @@ export class DuckDecoyFastify implements DuckDecoyHttpTransport {
             response: ddResponse,
             state: dd.state,
           })
-          logEntry.statusCode = reply.statusCode
+          logEntry.statusCode = ddResponse.statusCode
         } catch (e) {
           logEntry.error = `${e}`
           logEntry.statusCode = 500

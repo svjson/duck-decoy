@@ -49,7 +49,14 @@ export const makeBoITService = async (transport: DuckDecoyHttpTransport) => {
     ],
     endpoints: {
       '/Login': async ({ request, response, state }) => {
-        // FIXME: Validate hash
+        const { Customer, Timestamp, Hash } = request.queryParameters
+
+        const recomputedHash = generateHash(PSK, [Customer, Timestamp])
+        if (Hash !== recomputedHash) {
+          console.log(Hash, 'vs', recomputedHash)
+          response.status(401).body()
+          return
+        }
         const customerId = request.queryParameters.Customer
         const valid = await state.customers.findOne(customerId)
         if (valid) {

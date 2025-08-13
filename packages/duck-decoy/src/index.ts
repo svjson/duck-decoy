@@ -2,9 +2,9 @@ export {
   createFakeServer,
   makeDecoyServer,
   DecoyServer,
-  logRequest,
   preHandlerEnabled,
 } from './server'
+export { RequestLog } from './log'
 export { ArrayCollection, RecordCollection } from './collection'
 export { DuckDecoyResponse, DuckDecoyRequest } from './http'
 export { datesBetween } from './types'
@@ -17,11 +17,6 @@ export type {
   EndpointHandlerFunction,
   EndpointResponseFormatter,
 } from './endpoint'
-export type {
-  RequestPreHandler,
-  RequestPreHandlerFunction,
-  RouteDef,
-  RequestLog,
-  RequestLogEntry,
-} from './types'
+export type { RequestPreHandler, RequestPreHandlerFunction, RouteDef } from './types'
+export type { RequestLogEntry } from './log'
 export type { DuckDecoyHttpTransport, HttpServerStartOptions } from './http'

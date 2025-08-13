@@ -1,4 +1,5 @@
-import { RequestLog, RequestLogEntry, RequestPreHandler, RouteDef } from './types'
+import { RequestPreHandler, RouteDef } from './types'
+import { RequestLog } from './log'
 import { EndpointsConfiguration } from './endpoint'
 import { buildRoutes } from './endpoint/endpoint'
 import { DuckDecoyHttpTransport, DuckDecoyRequest, resolveHttpTransport } from './http'
@@ -30,36 +31,6 @@ type DuckDecoyServerConfig<State extends Object> = {
   routes?: RouteDef<State>[]
   port?: number
   autostart?: boolean
-}
-
-/**
- * Log an incoming request to the `requestLog` of a DecoyServer
- * instance.
- *
- * Returns the logged entry, allowing the logging handler to encode
- * response information once the response has been handled.
- *
- * @param dd - The DecoyServer instance to log the request to
- * @param route - The RouteDef that the request is being logged for
- * @param req - The DuckDecoyRequest that is being logged
- *
- * @return The logged RequestLogEntry
- */
-export const logRequest = (
-  dd: DecoyServer<any>,
-  route: RouteDef<any>,
-  req: DuckDecoyRequest
-): RequestLogEntry => {
-  const logEntry: RequestLogEntry = {
-    routeId: route.routeId,
-    path: req.url,
-    queryParams: { ...req.queryParameters },
-  }
-  dd.requestLog.all.push(logEntry)
-  const byRoute = (dd.requestLog.byRouteId[route.routeId] ??= [])
-  byRoute.push(logEntry)
-
-  return logEntry
 }
 
 /**
@@ -155,7 +126,8 @@ export class DecoyServer<State extends Object> {
    */
   state: State
   /**
-   *
+   * List of preHandlers, or middleware, that an incoming request will be
+   * sequentially filtered through before any endpoint handler is invoked.
    */
   preHandlers: RequestPreHandler<State>[]
 
@@ -169,7 +141,7 @@ export class DecoyServer<State extends Object> {
     this.impl = config.impl
     this.port = config.port
     this.root = config.root
-    this.requestLog = { all: [], byRouteId: {} }
+    this.requestLog = new RequestLog()
     this.state = config.state
     this.preHandlers = config.preHandlers
     this.url = ''
@@ -178,7 +150,7 @@ export class DecoyServer<State extends Object> {
   }
 
   reset() {
-    this.requestLog = { all: [], byRouteId: {} }
+    this.requestLog.reset()
   }
 
   async start() {
