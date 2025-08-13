@@ -51,7 +51,7 @@ export class ArrayCollection<
   }
 
   async deleteOne(criteria?: RecordCriteria<IdentityType>) {
-    const [index, match] = await this.findByCriteria(criteria)
+    const [index, match] = await this.findOneByCriteria(criteria)
 
     if (index !== -1) {
       this.records.splice(index, 1)
@@ -79,7 +79,7 @@ export class ArrayCollection<
     return filterQuery(this.records, query as Query<T>)
   }
 
-  private async findByCriteria(
+  private async findOneByCriteria(
     criteria?: RecordCriteria<IdentityType>
   ): Promise<[number, T | None]> {
     const index =
@@ -95,7 +95,7 @@ export class ArrayCollection<
   }
 
   async findOne(criteria?: RecordCriteria<IdentityType>) {
-    const [_, match] = await this.findByCriteria(criteria)
+    const [_, match] = await this.findOneByCriteria(criteria)
     return match
   }
 
@@ -103,7 +103,7 @@ export class ArrayCollection<
     criteria: RecordCriteria<IdentityType>,
     record: WithoutIdentity<T, IdentityKey>
   ): Promise<T | None> {
-    const [index, match] = await this.findByCriteria(criteria)
+    const [index, match] = await this.findOneByCriteria(criteria)
     if (index === -1 || match === this.none) return this.none
 
     const updated = {
