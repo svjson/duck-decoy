@@ -1,6 +1,6 @@
 # Duck Decoy
 
-[![CI](https://github.com/svjson/duck-decoy/actions/workflows/build-and-test.yaml/badge.svg?branch=main)](https://github.com/svjson/duck-decoy/actions/workflows/build-and-test.yaml)
+[![CI](https://github.com/svjson/duck-decoy/actions/workflows/build-and-test.yaml/badge.svg?branch=master)](https://github.com/svjson/duck-decoy/actions/workflows/build-and-test.yaml)
 [![npm version](https://img.shields.io/npm/v/duck-decoy.svg)](https://www.npmjs.com/package/duck-decoy)
 [![npm downloads](https://img.shields.io/npm/dm/duck-decoy.svg)](https://www.npmjs.com/package/duck-decoy)
 [![GitHub](https://img.shields.io/badge/GitHub-svjson%2Fduck--decoy-blue?logo=github)](https://github.com/svjson/duck-decoy)
