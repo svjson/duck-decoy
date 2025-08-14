@@ -5,7 +5,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/duck-decoy.svg)](https://www.npmjs.com/package/duck-decoy)
 [![GitHub](https://img.shields.io/badge/GitHub-svjson%2Fduck--decoy-blue?logo=github)](https://github.com/svjson/duck-decoy)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Node](https://img.shields.io/node/v/heedjs)](https://www.npmjs.com/package/heedjs)
+[![Node](https://img.shields.io/node/v/duck-decoy)](https://www.npmjs.com/package/duck-decoy)
 
 > Simple HTTP mocks and fakes - *spin up fake APIs with minimum effort.*
 
@@ -17,6 +17,7 @@ Usually, projects using Duck Decoy should not depend directly on `duck-decoy`, b
 of the http transport adapters:
 
 * @duck-decoy/fastify ([GitHub](https://github.com/svjson/duck-decoy/tree/master/packages/http/adapter-fastify)) ([npmjs.com](https://www.npmjs.com/package/@duck-decoy/fastify))
+* @duck-decoy/koa ([GitHub](https://github.com/svjson/duck-decoy/tree/master/packages/http/adapter-koa)) ([npmjs.com](https://www.npmjs.com/package/@duck-decoy/koa))
 
 ## License
 

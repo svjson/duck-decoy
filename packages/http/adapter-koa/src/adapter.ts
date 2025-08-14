@@ -8,7 +8,7 @@ import {
   RouteDef,
 } from 'duck-decoy'
 import Koa, { Context } from 'koa'
-import KoaRouter, { Middleware } from '@koa/router'
+import KoaRouter from '@koa/router'
 import bodyParser from '@koa/bodyparser'
 import { Server } from 'node:net'
 

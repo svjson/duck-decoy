@@ -2,7 +2,7 @@ import { RequestPreHandler, RouteDef } from './types'
 import { RequestLog } from './log'
 import { EndpointsConfiguration } from './endpoint'
 import { buildRoutes } from './endpoint/endpoint'
-import { DuckDecoyHttpTransport, DuckDecoyRequest, resolveHttpTransport } from './http'
+import { DuckDecoyHttpTransport, resolveHttpTransport } from './http'
 
 /**
  * Configuration type specifying the the behavior, state and shape of
