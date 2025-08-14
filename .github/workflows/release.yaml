@@ -32,6 +32,8 @@ jobs:
             name: "duck-decoy"
           - pkg: packages/http/adapter-fastify
             name: "@duck-decoy/fastify"
+          - pkg: packages/http/adapter-koa
+            name: "@duck-decoy/koa"
     steps:
       - uses: actions/checkout@v4
   
