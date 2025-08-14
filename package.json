@@ -15,7 +15,7 @@
   "scripts": {
     "build": "npm run build:core && npm run build:http-adapters",
     "build:core": "npm run --workspace=duck-decoy build --if-present",
-    "build:http-adapters": "npm run --workspace=packages/http/adapter-fastify build",
+    "build:http-adapters": "npm run --workspace=@duck-decoy/fastify --workspace=@duck-decoy/koa build --if-present",
     "ci:test": "npm run --workspaces ci:test --if-present",
     "lint": "npm run --workspaces lint --if-present",
     "test": "npm run --workspaces test --if-present",

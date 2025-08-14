@@ -8,7 +8,7 @@ import {
   makeDecoyServer,
 } from 'duck-decoy'
 
-import { boitState, PSK } from './state'
+import { initialBoITState, PSK } from './state'
 import { BoITTimeSlot } from './types'
 
 export const generateHash = (psk: string, parts: string[]) => {
@@ -28,7 +28,7 @@ export const makeBoITService = async (transport: DuckDecoyHttpTransport) => {
     impl: transport,
     autostart: true,
     root: '/bookingservice/bookingservice.svc',
-    state: boitState,
+    state: initialBoITState(),
     preHandlers: [
       {
         exclude: ['/Login'],

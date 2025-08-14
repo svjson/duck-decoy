@@ -114,7 +114,7 @@ const TIME_SLOT_CONFIGURATIONS: BoITTimeSlotConfiguration[] = [
 /**
  * The initial state of the BoIT service
  */
-export const boitState = {
+export const initialBoITState = () => ({
   psk: PSK,
   bookings: new ArrayCollection<BoITBooking>(),
   categories: new ArrayCollection<BoITResourceCategory>(CATEGORIES),
@@ -129,4 +129,4 @@ export const boitState = {
   validTokens: new ArrayCollection<BoITAuthToken, 'token'>([], {
     identity: 'token',
   }),
-}
+})
