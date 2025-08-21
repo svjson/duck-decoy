@@ -139,7 +139,7 @@ export class DecoyServer<State extends Object> {
 
   constructor(config: DuckDecoyServerConfigParams<State>) {
     this.impl = config.impl
-    this.port = config.port
+    this.port = config.port ?? 0
     this.root = config.root
     this.requestLog = new RequestLog()
     this.state = config.state
@@ -154,8 +154,9 @@ export class DecoyServer<State extends Object> {
   }
 
   async start() {
-    await this.impl.start({ port: 0 })
+    await this.impl.start({ port: this.port })
     this.url = `http://localhost:${this.impl.port()}`
+    this.port = this.impl.port()
   }
 
   async shutdown() {
