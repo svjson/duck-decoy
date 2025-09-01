@@ -1,17 +1,17 @@
 {
   "name": "duck-decoy-root",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "private": true,
-  "author": "Sven Johansson",
   "license": "MIT",
+  "author": "Sven Johansson",
+  "packageManager": "npm@>=10.8.2",
+  "engines": {
+    "node": ">=18"
+  },
   "workspaces": [
     "packages/duck-decoy",
     "packages/http/*"
   ],
-  "engines": {
-    "node": ">=18"
-  },
-  "packageManager": "npm@>=10.8.2",
   "scripts": {
     "build": "npm run build:core && npm run build:http-adapters",
     "build:core": "npm run --workspace=duck-decoy build --if-present",

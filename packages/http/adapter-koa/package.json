@@ -1,10 +1,12 @@
 {
   "name": "@duck-decoy/koa",
-  "version": "0.1.0",
-  "description": "Simple HTTP mocks and fakes - running on Koa",
+  "version": "0.1.4",
   "type": "module",
-  "author": "Sven Johansson",
+  "description": "Simple HTTP mocks and fakes - running on Koa",
   "license": "MIT",
+  "author": "Sven Johansson",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "README.md",
@@ -13,8 +15,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

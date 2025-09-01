@@ -1,14 +1,20 @@
 {
   "name": "@duck-decoy/fastify",
-  "version": "0.1.3",
-  "description": "Simple HTTP mocks and fakes - running on Fastify",
+  "version": "0.1.4",
   "type": "module",
-  "author": "Sven Johansson",
+  "description": "Simple HTTP mocks and fakes - running on Fastify",
   "license": "MIT",
-  "files": ["dist", "README.md", "LICENSE"],
-  "publishConfig": { "access": "public" },
+  "author": "Sven Johansson",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
