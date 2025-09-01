@@ -21,7 +21,7 @@ export class DuckDecoyFastify implements DuckDecoyHttpTransport {
   }
 
   async start(opts: HttpServerStartOptions) {
-    await this.fastify.listen({ port: opts.port })
+    await this.fastify.listen({ host: '0.0.0.0', port: opts.port })
   }
 
   async shutdown(): Promise<void> {
