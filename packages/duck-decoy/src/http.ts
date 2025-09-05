@@ -115,7 +115,7 @@ const isHttpTransportInstance = (candidate: any) => {
  * @throws NoImplementationError if the provided value is not an instance
  */
 export const resolveHttpTransport = async (
-  configValue: string | undefined | DuckDecoyHttpTransport | Function
+  configValue: string | DuckDecoyHttpTransport | Function | undefined
 ): Promise<DuckDecoyHttpTransport> => {
   if (isHttpTransportInstance(configValue)) {
     return configValue as DuckDecoyHttpTransport

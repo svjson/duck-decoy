@@ -41,7 +41,6 @@ export class DuckDecoyKoa implements DuckDecoyHttpTransport {
 
   async start(opts: HttpServerStartOptions) {
     if (!this.server) {
-      console.log(this.router.stack.map((r) => ({ methods: r.methods, uri: r.path })))
       this.koa.use(this.router.routes())
       this.server = this.koa.listen({ port: opts.port })
     }
@@ -67,9 +66,6 @@ export class DuckDecoyKoa implements DuckDecoyHttpTransport {
       route.routeId,
       `${dd.root}${route.path}`,
       async (ctx: Context) => {
-        console.log('Handling begins for', ctx.method, ctx.url)
-        console.log('Actual Duck Decoy route is', route.method, route.path)
-        console.log('routeId is', route.routeId)
         const ddRequest = new KoaDDRequest(ctx)
         const ddResponse = new KoaDDResponse(ctx)
         const logEntry = dd.requestLog.logRequest(ddRequest, route)

@@ -64,11 +64,12 @@ const materializeConfiguration = async <State extends Object>(
 const configureRoutes = <State extends Object>(
   instance: DecoyServer<State>,
   routes: RouteDef<State>[]
-) => {
+): RouteDef<State>[] => {
   const { impl } = instance
   for (const route of routes) {
     impl.registerRoute(route, instance)
   }
+  return routes
 }
 
 const configureEndpoints = <State>(
@@ -76,7 +77,7 @@ const configureEndpoints = <State>(
   endpoints: EndpointsConfiguration<State>
 ) => {
   const routes = buildRoutes(endpoints)
-  configureRoutes(instance, routes)
+  return configureRoutes(instance, routes)
 }
 
 export const preHandlerEnabled = (preHandler: RequestPreHandler<any>, uri: string) => {
@@ -137,6 +138,8 @@ export class DecoyServer<State extends Object> {
    */
   requestLog: RequestLog
 
+  #routes: RouteDef<State>[] = []
+
   constructor(config: DuckDecoyServerConfigParams<State>) {
     this.impl = config.impl
     this.port = config.port ?? 0
@@ -145,8 +148,12 @@ export class DecoyServer<State extends Object> {
     this.state = config.state
     this.preHandlers = config.preHandlers
     this.url = ''
-    configureEndpoints(this, config.endpoints)
-    configureRoutes(this, config.routes ?? [])
+    this.#routes.push(...configureEndpoints(this, config.endpoints))
+    this.#routes.push(...configureRoutes(this, config.routes ?? []))
+  }
+
+  get routes() {
+    return this.#routes
   }
 
   reset() {
