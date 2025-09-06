@@ -43,6 +43,57 @@ describe('Decoy Server', () => {
           JSON.parse(await fs.readFile(path.join(PACKAGE_ROOT, 'package.json'), 'utf8'))
         )
       })
+
+      it('should serve a full static root directory when no file pattern is provided', async () => {
+        // Given
+        server = await makeDecoyServer({
+          impl: new transport(),
+          autostart: true,
+          routes: [
+            {
+              routeId: 'static',
+              path: '/project/',
+              method: 'GET',
+              staticRoot: PACKAGE_ROOT,
+            },
+          ],
+        })
+        client = await makeTestClient(server)
+
+        // When
+        const responses: Record<string, any> = {}
+        for (const file of ['package.json', 'tsconfig.json', 'test/adapters.ts']) {
+          const { data, status, headers } = await client.get(`project/${file}`)
+          responses[file] = {
+            status,
+            data,
+            headers,
+          }
+        }
+
+        // Then
+        expect(responses).toEqual({
+          'package.json': expect.objectContaining({
+            status: 200,
+            data: JSON.parse(
+              await fs.readFile(path.join(PACKAGE_ROOT, 'package.json'), 'utf8')
+            ),
+          }),
+          'tsconfig.json': expect.objectContaining({
+            status: 200,
+            data: JSON.parse(
+              await fs.readFile(path.join(PACKAGE_ROOT, 'tsconfig.json'), 'utf8')
+            ),
+          }),
+          'test/adapters.ts': expect.objectContaining({
+            status: 200,
+            data: await fs.readFile(
+              path.join(PACKAGE_ROOT, 'test', 'adapters.ts'),
+              'utf8'
+            ),
+          }),
+        })
+      })
     })
   })
 })

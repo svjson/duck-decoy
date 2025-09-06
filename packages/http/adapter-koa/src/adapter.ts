@@ -15,6 +15,8 @@ import Koa, { Context } from 'koa'
 import KoaRouter from '@koa/router'
 import bodyParser from '@koa/bodyparser'
 import send from 'koa-send'
+import mount from 'koa-mount'
+import serve from 'koa-static'
 import { Server } from 'node:net'
 
 const stripHead = (router: any) => {
@@ -74,9 +76,13 @@ export class DuckDecoyKoa implements DuckDecoyHttpTransport {
     route: StaticRouteDef,
     dd: DecoyServer<State>
   ) {
-    this.router.get(`${dd.root}${route.path}`, async (ctx) => {
-      await send(ctx, route.filePattern as string, { root: route.staticRoot })
-    })
+    if (route.filePattern) {
+      this.router.get(`${dd.root}${route.path}`, async (ctx) => {
+        await send(ctx, route.filePattern as string, { root: route.staticRoot })
+      })
+    } else {
+      this.koa.use(mount(route.path, serve(route.staticRoot)))
+    }
   }
 
   registerDynamicRoute<State extends Object>(

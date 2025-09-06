@@ -55,10 +55,18 @@ export class DuckDecoyFastify implements DuckDecoyHttpTransport {
     route: StaticRouteDef,
     dd: DecoyServer<State>
   ) {
-    this.fastify.get(`${dd.root}${route.path}`, (req, reply) => {
-      console.log('SERVE')
-      reply.sendFile(route.filePattern as string, route.staticRoot)
-    })
+    if (route.filePattern) {
+      this.fastify.get(`${dd.root}${route.path}`, (req, reply) => {
+        reply.sendFile(route.filePattern as string, route.staticRoot)
+      })
+    } else {
+      this.fastify.register(fastifyStatic, {
+        root: route.staticRoot,
+        prefix: route.path.endsWith('/') ? route.path : `${route.path}/`,
+        index: false,
+        decorateReply: false,
+      })
+    }
   }
 
   registerDynamicRoute<State extends Object>(
