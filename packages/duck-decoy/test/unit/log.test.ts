@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { RequestLog } from '@src/log'
-import { RouteDef } from '@src/types'
+import { RouteDef } from '@src/route'
 import { DuckDecoyRequest } from '@src/http'
 
 describe('RequestLog', () => {

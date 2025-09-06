@@ -1,5 +1,5 @@
 import { DuckDecoyRequest } from './http'
-import { RouteDef } from './types'
+import { RouteDef } from './route'
 
 /**
  * Request log for fake http servers. Stores recorded request entries
@@ -28,7 +28,10 @@ export class RequestLog {
    *
    * @return The logged RequestLogEntry
    */
-  logRequest(request: DuckDecoyRequest, route: RouteDef<any>): RequestLogEntry {
+  logRequest<State extends unknown = any>(
+    request: DuckDecoyRequest,
+    route: RouteDef<State>
+  ): RequestLogEntry {
     const logEntry = {
       routeId: route.routeId,
       pattern: route.path,

@@ -1,5 +1,5 @@
 import { DecoyServer } from './server'
-import { RouteDef } from './types'
+import { RouteDef } from './route'
 
 export type HttpMethod = 'GET' | 'PUT' | 'POST' | 'DELETE' | 'HEAD' | 'OPTIONS' | 'PATCH'
 

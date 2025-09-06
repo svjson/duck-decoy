@@ -3,13 +3,18 @@ import {
   DuckDecoyHttpTransport,
   DuckDecoyRequest,
   DuckDecoyResponse,
+  DynamicRouteDef,
   HttpServerStartOptions,
+  isDynamicRoute,
+  isStaticRoute,
   preHandlerEnabled,
   RouteDef,
+  StaticRouteDef,
 } from 'duck-decoy'
 import Koa, { Context } from 'koa'
 import KoaRouter from '@koa/router'
 import bodyParser from '@koa/bodyparser'
+import send from 'koa-send'
 import { Server } from 'node:net'
 
 const stripHead = (router: any) => {
@@ -58,6 +63,26 @@ export class DuckDecoyKoa implements DuckDecoyHttpTransport {
   }
 
   registerRoute<State extends Object>(route: RouteDef<State>, dd: DecoyServer<State>) {
+    if (isDynamicRoute(route)) {
+      this.registerDynamicRoute(route, dd)
+    } else if (isStaticRoute(route)) {
+      this.registerStaticRoute(route, dd)
+    }
+  }
+
+  registerStaticRoute<State extends Object>(
+    route: StaticRouteDef,
+    dd: DecoyServer<State>
+  ) {
+    this.router.get(`${dd.root}${route.path}`, async (ctx) => {
+      await send(ctx, route.filePattern as string, { root: route.staticRoot })
+    })
+  }
+
+  registerDynamicRoute<State extends Object>(
+    route: DynamicRouteDef<State>,
+    dd: DecoyServer<State>
+  ) {
     const fn = (this.router as any)[route.method.toLowerCase()] as Function
     if (!fn) throw new Error(`Unsupported method: ${route.method}`)
 

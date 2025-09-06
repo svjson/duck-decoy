@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import KoaRouter from '@koa/router'
 import DuckDecoyKoa from '../../src/index'
-import { DecoyServer, RouteDef } from 'duck-decoy'
+import {
+  DecoyServer,
+  DynamicRouteDef,
+  EndpointHandlerFunction,
+  RouteDef,
+} from 'duck-decoy'
+import { EndpointHandlerParams } from '../../../../duck-decoy/dist/src/endpoint'
 
 const routerStackSummary = (router: KoaRouter) => {
   return router.stack.map((r) => ({ name: r.name, methods: r.methods, path: r.path }))
@@ -22,7 +28,8 @@ describe('DuckDecoyKoa', () => {
           routeId: 'splendid-things-GET',
           method: 'GET',
           path: '/splendid/things',
-        } as RouteDef<any>,
+          handler: async ({}: EndpointHandlerParams<any>): Promise<void> => {},
+        },
         server
       )
 
@@ -49,6 +56,7 @@ describe('DuckDecoyKoa', () => {
           routeId: 'splendid-things-GET',
           method: 'GET',
           path: '/splendid/things',
+          handler: async ({}: EndpointHandlerParams<any>): Promise<void> => {},
         } as RouteDef<any>,
         server
       )
@@ -57,7 +65,8 @@ describe('DuckDecoyKoa', () => {
           routeId: 'splendid-things-PUT',
           method: 'PUT',
           path: '/splendid/things',
-        } as RouteDef<any>,
+          handler: async ({}: EndpointHandlerParams<any>): Promise<void> => {},
+        } as DynamicRouteDef<any>,
         server
       )
       ddKoa.registerRoute(
@@ -65,6 +74,7 @@ describe('DuckDecoyKoa', () => {
           routeId: 'splendid-things-DELETE',
           method: 'DELETE',
           path: '/splendid/things',
+          handler: async ({}: EndpointHandlerParams<any>): Promise<void> => {},
         } as RouteDef<any>,
         server
       )

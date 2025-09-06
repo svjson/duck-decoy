@@ -5,7 +5,7 @@ import {
   EndpointResponseFormatter,
   EndpointHandlerFunction,
 } from './types'
-import { RouteDef } from '../types'
+import { DynamicRouteDef, RouteDef } from '@src/route'
 import { HttpMethod } from '@src/http'
 import { ArrayCollection } from '@src/collection'
 import { ResourceRouteBuilder } from './resource'
@@ -33,10 +33,13 @@ export const formatUri = (uri: string) => {
  *
  * @return An array of route definitions for the CRUD operations
  */
-const buildCRUDRoutes = (uri: string, records: any[]): RouteDef<any>[] => {
+const buildCRUDRoutes = <State = unknown>(
+  uri: string,
+  records: any[]
+): DynamicRouteDef<State>[] => {
   const builder = new ResourceRouteBuilder(uri, new ArrayCollection(records), 'id')
 
-  return builder.coreCrudRoutes().build()
+  return builder.coreCrudRoutes().build<State>()
 }
 
 /**
@@ -57,10 +60,10 @@ const makeEndpoint = <State>(
   opts: {
     responseFormatter?: EndpointResponseFormatter<State>
   } = {}
-): RouteDef<State> => {
+): DynamicRouteDef<State> => {
   const { responseFormatter } = opts
 
-  const route: RouteDef<State> = {
+  const route: DynamicRouteDef<State> = {
     routeId: `${uri}-${method}`,
     method: method,
     path: formatUri(uri),
@@ -87,7 +90,7 @@ const makeEndpoint = <State>(
 const buildDeclaredEndpointRoutes = <State>(
   uri: string,
   declaration: EndpointConfiguration<State>
-): RouteDef<State>[] => {
+): DynamicRouteDef<State>[] => {
   if (Array.isArray(declaration)) {
     return buildCRUDRoutes(uri, declaration)
   }
@@ -124,7 +127,7 @@ const buildDeclaredEndpointRoutes = <State>(
  * @return An array of `RouteDef` instances representing all routes
  */
 export const buildRoutes = <State>(endpoints: EndpointsConfiguration<State>) => {
-  const routes: RouteDef<State>[] = []
+  const routes: DynamicRouteDef<State>[] = []
   for (const [uri, declaration] of Object.entries(endpoints)) {
     const declaredRoutes = buildDeclaredEndpointRoutes(uri, declaration)
     routes.push(...declaredRoutes)

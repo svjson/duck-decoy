@@ -1,20 +1,5 @@
 import { HttpMethod } from './http'
-import {
-  EndpointHandlerFunction,
-  EndpointHandlerParams,
-  EndpointResponseFormatter,
-} from './endpoint'
-
-/**
- * Used to define a route in the fake server
- */
-export type RouteDef<State = unknown> = {
-  routeId: string
-  method: HttpMethod
-  path: string
-  handler: EndpointHandlerFunction<State>
-  responseFormatter?: EndpointResponseFormatter<State>
-}
+import { EndpointHandlerParams } from './endpoint'
 
 export type RequestPreHandlerFunction<State> = (
   params: EndpointHandlerParams<State>

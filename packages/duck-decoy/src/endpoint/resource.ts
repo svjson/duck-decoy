@@ -1,6 +1,6 @@
 import { RecordCollection, WithoutIdentity } from '../collection/collection'
 import { HttpMethod } from '@src/http'
-import { RouteDef } from '@src/types'
+import { DynamicRouteDef, RouteDef } from '@src/route'
 import { formatUri } from './endpoint'
 import { EndpointHandlerParams, EndpointHandlerFunction } from './types'
 
@@ -140,7 +140,7 @@ class RouteBuilder {
     return this
   }
 
-  build(parent: ResourceRouteBuilder): RouteDef<any> {
+  build(parent: ResourceRouteBuilder): DynamicRouteDef<any> {
     let routeId = `${parent._resourceUri}-${this.method}`
     let path = parent._resourceUri
     if (this.resourceIdentifier === 'identity') {
@@ -186,7 +186,7 @@ export class ResourceRouteBuilder {
     return this
   }
 
-  build(): RouteDef<any>[] {
+  build<State = unknown>(): DynamicRouteDef<State>[] {
     return this.routeBuilders.map((rb) => rb.build(this))
   }
 }

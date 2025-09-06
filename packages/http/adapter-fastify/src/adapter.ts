@@ -1,4 +1,6 @@
+import path from 'node:path'
 import Fastify, { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
+import '@fastify/static'
 import {
   DecoyServer,
   DuckDecoyRequest,
@@ -7,7 +9,12 @@ import {
   RouteDef,
   preHandlerEnabled,
   HttpServerStartOptions,
+  StaticRouteDef,
+  isDynamicRoute,
+  isStaticRoute,
+  DynamicRouteDef,
 } from 'duck-decoy'
+import fastifyStatic, { FastifyStaticOptions } from '@fastify/static'
 
 /**
  * Fastify-implementation of `DuckDecoyHttpTransport`
@@ -18,6 +25,10 @@ export class DuckDecoyFastify implements DuckDecoyHttpTransport {
 
   constructor() {
     this.fastify = Fastify()
+    this.fastify.register(fastifyStatic, {
+      root: path.resolve(import.meta.url),
+      serve: false,
+    } as FastifyStaticOptions)
   }
 
   async start(opts: HttpServerStartOptions) {
@@ -33,6 +44,27 @@ export class DuckDecoyFastify implements DuckDecoyHttpTransport {
   }
 
   registerRoute<State extends Object>(route: RouteDef<State>, dd: DecoyServer<State>) {
+    if (isDynamicRoute(route)) {
+      this.registerDynamicRoute(route, dd)
+    } else if (isStaticRoute(route)) {
+      this.registerStaticRoute(route, dd)
+    }
+  }
+
+  registerStaticRoute<State extends Object>(
+    route: StaticRouteDef,
+    dd: DecoyServer<State>
+  ) {
+    this.fastify.get(`${dd.root}${route.path}`, (req, reply) => {
+      console.log('SERVE')
+      reply.sendFile(route.filePattern as string, route.staticRoot)
+    })
+  }
+
+  registerDynamicRoute<State extends Object>(
+    route: DynamicRouteDef<State>,
+    dd: DecoyServer<State>
+  ) {
     this.fastify.route({
       method: route.method,
       exposeHeadRoute: false,
