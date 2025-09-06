@@ -8,6 +8,9 @@
     "test": "vitest run --reporter verbose",
     "test:e2e": "npm run test"
   },
+  "engines": {
+    "node": ">=21.2.0"
+  },
   "devDependencies": {
     "@duck-decoy/fastify": "*",
     "@duck-decoy/koa": "*",

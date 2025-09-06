@@ -1,6 +1,6 @@
 import { RecordCollection, WithoutIdentity } from '../collection/collection'
 import { HttpMethod } from '@src/http'
-import { DynamicRouteDef, RouteDef } from '@src/route'
+import { DynamicRouteDef } from '@src/route'
 import { formatUri } from './endpoint'
 import { EndpointHandlerParams, EndpointHandlerFunction } from './types'
 

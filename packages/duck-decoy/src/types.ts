@@ -1,4 +1,3 @@
-import { HttpMethod } from './http'
 import { EndpointHandlerParams } from './endpoint'
 
 export type RequestPreHandlerFunction<State> = (

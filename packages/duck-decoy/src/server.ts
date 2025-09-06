@@ -1,5 +1,5 @@
 import { RequestPreHandler } from './types'
-import { DynamicRouteDef, RouteDef } from './route'
+import { RouteDef } from './route'
 import { RequestLog } from './log'
 import { EndpointsConfiguration } from './endpoint'
 import { buildRoutes } from './endpoint/endpoint'

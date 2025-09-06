@@ -1,6 +1,6 @@
 import path from 'node:path'
 import fs from 'node:fs/promises'
-import { afterAll, afterEach, beforeAll, describe, expect, it, test } from 'vitest'
+import { afterEach, describe, expect, it, test } from 'vitest'
 
 import { HTTP_ADAPTERS } from '../adapters'
 import { DecoyServer, makeDecoyServer } from 'duck-decoy'

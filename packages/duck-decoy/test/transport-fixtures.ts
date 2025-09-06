@@ -25,7 +25,7 @@ export class TestHttpTransport implements DuckDecoyHttpTransport {
     return this.opts?.port || 0
   }
 
-  registerRoute<State extends Object>(route: RouteDef<State>, dd: DecoyServer<State>) {
+  registerRoute<State extends Object>(route: RouteDef<State>, _dd: DecoyServer<State>) {
     this.routes.push(route)
   }
 }

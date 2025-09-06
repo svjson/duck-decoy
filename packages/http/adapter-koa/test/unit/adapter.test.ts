@@ -1,12 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import KoaRouter from '@koa/router'
 import DuckDecoyKoa from '../../src/index'
-import {
-  DecoyServer,
-  DynamicRouteDef,
-  EndpointHandlerFunction,
-  RouteDef,
-} from 'duck-decoy'
+import { DecoyServer, DynamicRouteDef, RouteDef } from 'duck-decoy'
 import { EndpointHandlerParams } from '../../../../duck-decoy/dist/src/endpoint'
 
 const routerStackSummary = (router: KoaRouter) => {

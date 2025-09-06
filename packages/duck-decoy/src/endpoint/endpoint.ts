@@ -5,7 +5,7 @@ import {
   EndpointResponseFormatter,
   EndpointHandlerFunction,
 } from './types'
-import { DynamicRouteDef, RouteDef } from '@src/route'
+import { DynamicRouteDef } from '@src/route'
 import { HttpMethod } from '@src/http'
 import { ArrayCollection } from '@src/collection'
 import { ResourceRouteBuilder } from './resource'

@@ -14,7 +14,7 @@ describe('makeDecoyServer', () => {
       endpoints: {
         '/auth/session': {
           method: 'POST',
-          handler: async ({ request, response, state }: EndpointHandlerParams) => {
+          handler: async ({ response }: EndpointHandlerParams) => {
             response.encode()
           },
         },
