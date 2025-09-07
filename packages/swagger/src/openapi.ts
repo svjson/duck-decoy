@@ -44,7 +44,7 @@ const makeOpenAPIPathConfig = (server: DecoyServer<any>) => {
 const makePathParameterCollection = (docs?: RouteDocumentation) => {
   const params: OpenAPIV3.ParameterObject[] = []
 
-  for (const [param, paramCfg] of Object.entries(docs?.queryParameters ?? {})) {
+  for (const [param, _paramCfg] of Object.entries(docs?.queryParameters ?? {})) {
     params.push({ name: param, in: 'query' })
   }
 
