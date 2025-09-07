@@ -11,6 +11,9 @@ import {
 
 import { initialBoITState, PSK } from './state'
 import { BoITTimeSlot } from './types'
+import { HTTP_ADAPTERS } from '../../adapters'
+import path from 'node:path'
+import { duckDecoySwaggerPlugin } from '@duck-decoy/swagger'
 
 export const generateHash = (psk: string, parts: string[]) => {
   const signature = createHmac('sha1', psk).update(parts.join('')).digest()
@@ -36,7 +39,7 @@ export const makeBoITService = async (
     plugins,
     preHandlers: [
       {
-        exclude: ['/Login', '/docs/json'],
+        exclude: ['/Login', '/docs/*'],
         handler: async ({ request, response, state }) => {
           const { Token } = request.queryParameters
           const auth = Token ? await state.validTokens.findOne(Token) : null
@@ -227,4 +230,20 @@ export const makeBoITService = async (
       },
     },
   })
+}
+
+const startStandalone = async () => {
+  const plugins: DuckDecoyPlugin[] = []
+  if (process.argv[2] === '--swagger') {
+    plugins.push(duckDecoySwaggerPlugin())
+  }
+  const server = await makeBoITService(new HTTP_ADAPTERS[0](), plugins)
+  console.log(server.port)
+}
+
+if (
+  process.argv[1] &&
+  path.resolve(process.argv[1]) === path.resolve(__dirname, 'service.ts')
+) {
+  startStandalone()
 }

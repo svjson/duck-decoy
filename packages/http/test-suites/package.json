@@ -17,6 +17,7 @@
     "@duck-decoy/swagger": "*",
     "axios": "^1.11.0",
     "duck-decoy": "*",
+    "ts-node": "^10.9.2",
     "vitest": "^3.2.4"
   }
 }

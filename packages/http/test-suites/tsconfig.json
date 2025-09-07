@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ESNext",
+    "module": "CommonJS",
     "moduleResolution": "Bundler",
     "types": ["node"],
     "lib": ["ES2022"],
@@ -16,6 +16,10 @@
     "paths": {
       "@src/*": ["./src/*"]
     }
+  },
+  "ts-node": {
+    "module": "ESNext",
+    "moduleResolution": "node16"
   },
   "include": ["src", "test"],
   "exclude": ["dist"]
