@@ -6,10 +6,13 @@ import {
   DynamicRouteDef,
   HttpServerStartOptions,
   isDynamicRoute,
-  isStaticRoute,
+  isStaticDirectoryRoute,
+  isStaticFileRoute,
   preHandlerEnabled,
   RouteDef,
-  StaticRouteDef,
+  StaticDirectoryRouteDef,
+  StaticFileRouteDef,
+  urlpath,
 } from 'duck-decoy'
 import Koa, { Context } from 'koa'
 import KoaRouter from '@koa/router'
@@ -18,6 +21,7 @@ import send from 'koa-send'
 import mount from 'koa-mount'
 import serve from 'koa-static'
 import { Server } from 'node:net'
+import path from 'node:path'
 
 const stripHead = (router: any) => {
   router.stack = router.stack.filter((layer: any) => {
@@ -67,22 +71,37 @@ export class DuckDecoyKoa implements DuckDecoyHttpTransport {
   registerRoute<State extends Object>(route: RouteDef<State>, dd: DecoyServer<State>) {
     if (isDynamicRoute(route)) {
       this.registerDynamicRoute(route, dd)
-    } else if (isStaticRoute(route)) {
-      this.registerStaticRoute(route, dd)
+    } else if (isStaticFileRoute(route)) {
+      this.registerStaticFileRoute(route, dd)
+    } else if (isStaticDirectoryRoute(route)) {
+      this.registerStaticDirectoryRoute(route, dd)
     }
   }
 
-  registerStaticRoute<State extends Object>(
-    route: StaticRouteDef,
+  registerStaticFileRoute<State extends Object>(
+    route: StaticFileRouteDef,
     dd: DecoyServer<State>
   ) {
-    if (route.filePattern) {
-      this.router.get(`${dd.root}${route.path}`, async (ctx) => {
-        await send(ctx, route.filePattern as string, { root: route.staticRoot })
+    const routePath = urlpath.join(dd.root, route.path)
+    this.router.get(routePath, async (ctx) => {
+      await send(ctx, path.basename(routePath) as string, {
+        root: path.dirname(route.staticFile),
       })
-    } else {
-      this.koa.use(mount(route.path, serve(route.staticRoot)))
-    }
+    })
+  }
+
+  registerStaticDirectoryRoute<State extends Object>(
+    route: StaticDirectoryRouteDef,
+    dd: DecoyServer<State>
+  ) {
+    const routePath = urlpath.trailingSlashJoin(dd.root, route.path)
+    const index =
+      typeof route.index === 'string'
+        ? route.index
+        : route.index === true
+          ? 'index.html'
+          : undefined
+    this.koa.use(mount(routePath, serve(route.staticRoot, { index })))
   }
 
   registerDynamicRoute<State extends Object>(

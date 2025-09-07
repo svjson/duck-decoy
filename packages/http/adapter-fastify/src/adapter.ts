@@ -9,10 +9,13 @@ import {
   RouteDef,
   preHandlerEnabled,
   HttpServerStartOptions,
-  StaticRouteDef,
   isDynamicRoute,
-  isStaticRoute,
   DynamicRouteDef,
+  urlpath,
+  isStaticFileRoute,
+  isStaticDirectoryRoute,
+  StaticFileRouteDef,
+  StaticDirectoryRouteDef,
 } from 'duck-decoy'
 import fastifyStatic, { FastifyStaticOptions } from '@fastify/static'
 
@@ -46,27 +49,41 @@ export class DuckDecoyFastify implements DuckDecoyHttpTransport {
   registerRoute<State extends Object>(route: RouteDef<State>, dd: DecoyServer<State>) {
     if (isDynamicRoute(route)) {
       this.registerDynamicRoute(route, dd)
-    } else if (isStaticRoute(route)) {
-      this.registerStaticRoute(route, dd)
+    } else if (isStaticFileRoute(route)) {
+      this.registerStaticFileRoute(route, dd)
+    } else if (isStaticDirectoryRoute(route)) {
+      this.registerStaticDirectoryRoute(route, dd)
     }
   }
 
-  registerStaticRoute<State extends Object>(
-    route: StaticRouteDef,
+  registerStaticFileRoute<State extends Object>(
+    route: StaticFileRouteDef,
     dd: DecoyServer<State>
   ) {
-    if (route.filePattern) {
-      this.fastify.get(`${dd.root}${route.path}`, (req, reply) => {
-        reply.sendFile(route.filePattern as string, route.staticRoot)
-      })
-    } else {
-      this.fastify.register(fastifyStatic, {
-        root: route.staticRoot,
-        prefix: route.path.endsWith('/') ? route.path : `${route.path}/`,
-        index: false,
-        decorateReply: false,
-      })
-    }
+    const routePath = urlpath.join(dd.root, route.path)
+    this.fastify.get(routePath, (_req, reply) => {
+      reply.sendFile(path.basename(routePath) as string, path.dirname(route.staticFile))
+    })
+  }
+
+  registerStaticDirectoryRoute<State extends Object>(
+    route: StaticDirectoryRouteDef,
+    dd: DecoyServer<State>
+  ) {
+    const routePath = urlpath.trailingSlashJoin(dd.root, route.path)
+    const index =
+      typeof route.index === 'string'
+        ? route.index
+        : route.index === true
+          ? 'index.html'
+          : undefined
+
+    this.fastify.register(fastifyStatic, {
+      root: route.staticRoot,
+      prefix: urlpath.trailingSlash(routePath),
+      index,
+      decorateReply: false,
+    })
   }
 
   registerDynamicRoute<State extends Object>(

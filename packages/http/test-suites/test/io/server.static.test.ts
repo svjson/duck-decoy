@@ -28,8 +28,7 @@ describe('Decoy Server', () => {
               routeId: 'package.json',
               path: '/project/package.json',
               method: 'GET',
-              staticRoot: PACKAGE_ROOT,
-              filePattern: 'package.json',
+              staticFile: path.join(PACKAGE_ROOT, 'package.json'),
             },
           ],
         })
