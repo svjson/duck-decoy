@@ -10,12 +10,14 @@
   },
   "workspaces": [
     "packages/duck-decoy",
-    "packages/http/*"
+    "packages/http/*",
+    "packages/swagger"
   ],
   "scripts": {
-    "build": "npm run build:core && npm run build:http-adapters",
+    "build": "npm run build:core && npm run build:http-adapters && npm run build:plugins",
     "build:core": "npm run --workspace=duck-decoy build --if-present",
     "build:http-adapters": "npm run --workspace=@duck-decoy/fastify --workspace=@duck-decoy/koa build --if-present",
+    "build:plugins": "npm run --workspace=@duck-decoy/swagger build",
     "ci:test": "npm run --workspaces ci:test --if-present",
     "lint": "npm run --workspaces lint --if-present",
     "test": "npm run --workspaces test --if-present",

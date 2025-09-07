@@ -3,6 +3,7 @@ import { createHmac } from 'node:crypto'
 import {
   datesBetween,
   DuckDecoyHttpTransport,
+  DuckDecoyPlugin,
   each,
   from,
   makeDecoyServer,
@@ -23,15 +24,19 @@ export const generateHash = (psk: string, parts: string[]) => {
   return hash
 }
 
-export const makeBoITService = async (transport: DuckDecoyHttpTransport) => {
+export const makeBoITService = async (
+  transport: DuckDecoyHttpTransport,
+  plugins: DuckDecoyPlugin[] = []
+) => {
   return await makeDecoyServer({
     impl: transport,
     autostart: true,
     root: '/bookingservice/bookingservice.svc',
     state: initialBoITState(),
+    plugins,
     preHandlers: [
       {
-        exclude: ['/Login'],
+        exclude: ['/Login', '/docs/json'],
         handler: async ({ request, response, state }) => {
           const { Token } = request.queryParameters
           const auth = Token ? await state.validTokens.findOne(Token) : null
