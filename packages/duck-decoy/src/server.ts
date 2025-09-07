@@ -101,8 +101,15 @@ export const preHandlerEnabled = (preHandler: RequestPreHandler<any>, uri: strin
     return false
   }
 
-  if (Array.isArray(preHandler.exclude) && preHandler.exclude.includes(uri)) {
-    return false
+  if (Array.isArray(preHandler.exclude)) {
+    for (const pattern of preHandler.exclude) {
+      if (pattern === uri) return false
+      if (pattern.endsWith('*')) {
+        if (uri.startsWith(pattern.substring(0, pattern.indexOf('*')))) {
+          return false
+        }
+      }
+    }
   }
 
   return true

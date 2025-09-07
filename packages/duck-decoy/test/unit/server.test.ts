@@ -1,7 +1,46 @@
 import { describe, expect, it } from 'vitest'
-import { makeDecoyServer } from '@src/index'
+import { makeDecoyServer, preHandlerEnabled, RequestPreHandler } from '@src/index'
 import { EndpointsConfiguration, EndpointHandlerParams } from '@src/endpoint'
 import { TestHttpTransport } from '../transport-fixtures'
+
+describe('preHandlerEnabled', () => {
+  describe('Single explicit Exclude-rule', () => {
+    it.each([
+      ['/api/Login', false],
+      ['/api/Book', true],
+      ['/', true],
+      ['/api/', true],
+    ])('%s should test %o', (uri, expected) => {
+      // Given
+      const preHandler: RequestPreHandler<any> = {
+        exclude: ['/api/Login'],
+        handler: async (_params) => {},
+      }
+
+      // Then
+      expect(preHandlerEnabled(preHandler, uri)).toBe(expected)
+    })
+  })
+
+  describe('Single pattern/wildcard Exclude-rule', () => {
+    it.each([
+      ['/api/docs/', false],
+      ['/api/docs/index.html', false],
+      ['/', true],
+      ['/docs/', true],
+      ['/docs/index.html', true],
+    ])('%s should test %o', (uri, expected) => {
+      // Given
+      const preHandler: RequestPreHandler<any> = {
+        exclude: ['/api/docs/*'],
+        handler: async (_params) => {},
+      }
+
+      // Then
+      expect(preHandlerEnabled(preHandler, uri)).toBe(expected)
+    })
+  })
+})
 
 describe('makeDecoyServer', () => {
   it('should expose configured endpoints as routes after construction', async () => {
