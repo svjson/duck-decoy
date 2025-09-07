@@ -59,6 +59,7 @@ HTTP_ADAPTERS.forEach((transport) => {
                 responses: {},
                 summary: '',
                 tags: [],
+                parameters: [],
               },
             },
             '/GetCalendarData': {
@@ -67,6 +68,7 @@ HTTP_ADAPTERS.forEach((transport) => {
                 responses: {},
                 summary: '',
                 tags: [],
+                parameters: [],
               },
             },
             '/GetCustomerBookings': {
@@ -75,6 +77,7 @@ HTTP_ADAPTERS.forEach((transport) => {
                 responses: {},
                 summary: '',
                 tags: [],
+                parameters: [],
               },
             },
             '/GetCustomerResources': {
@@ -83,6 +86,7 @@ HTTP_ADAPTERS.forEach((transport) => {
                 responses: {},
                 summary: '',
                 tags: [],
+                parameters: [],
               },
             },
             '/Login': {
@@ -91,6 +95,20 @@ HTTP_ADAPTERS.forEach((transport) => {
                 responses: {},
                 summary: '',
                 tags: [],
+                parameters: [
+                  {
+                    name: 'Customer',
+                    in: 'query',
+                  },
+                  {
+                    name: 'Timestamp',
+                    in: 'query',
+                  },
+                  {
+                    name: 'Hash',
+                    in: 'query',
+                  },
+                ],
               },
             },
           },

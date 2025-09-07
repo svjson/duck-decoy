@@ -56,26 +56,35 @@ export const makeBoITService = async (
       },
     ],
     endpoints: {
-      '/Login': async ({ request, response, state }) => {
-        const { Customer, Timestamp, Hash } = request.queryParameters
+      '/Login': {
+        docs: {
+          queryParameters: {
+            Customer: 'string',
+            Timestamp: 'string',
+            Hash: 'string',
+          },
+        },
+        handler: async ({ request, response, state }) => {
+          const { Customer, Timestamp, Hash } = request.queryParameters
 
-        const recomputedHash = generateHash(PSK, [Customer, Timestamp])
-        if (Hash !== recomputedHash) {
-          console.log(Hash, 'vs', recomputedHash)
-          response.status(401).body()
-          return
-        }
-        const customerId = request.queryParameters.Customer
-        const valid = await state.customers.findOne(customerId)
-        if (valid) {
-          response.status(200).body({
-            Token: generateHash(PSK, [customerId, new Date().toLocaleString()]),
-            ApiVersion: 1,
-            CompatibilityVersion: 1,
-          })
-        } else {
-          response.status(401).body()
-        }
+          const recomputedHash = generateHash(PSK, [Customer, Timestamp])
+          if (Hash !== recomputedHash) {
+            console.log(Hash, 'vs', recomputedHash)
+            response.status(401).body()
+            return
+          }
+          const customerId = request.queryParameters.Customer
+          const valid = await state.customers.findOne(customerId)
+          if (valid) {
+            response.status(200).body({
+              Token: generateHash(PSK, [customerId, new Date().toLocaleString()]),
+              ApiVersion: 1,
+              CompatibilityVersion: 1,
+            })
+          } else {
+            response.status(401).body()
+          }
+        },
       },
       '/GetCustomerBookings': async ({ request, response, state }) => {
         const bookings = await each('booking')

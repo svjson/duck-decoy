@@ -1,5 +1,6 @@
 import { RecordCollection } from '@src/collection'
 import { HttpMethod, DuckDecoyRequest, DuckDecoyResponse } from '@src/http'
+import { RouteDocumentation } from '@src/route/types'
 
 /**
  * The main `endpoints` configuration object of a Decoy Server configuration.
@@ -80,6 +81,7 @@ export type EndpointResponseFormatter<State> = (
 
 export interface EndpointDeclaration<State> {
   method?: HttpMethod
+  docs?: RouteDocumentation
   formatter?: EndpointResponseFormatter<State>
   handler: EndpointHandlerFunction<State>
 }

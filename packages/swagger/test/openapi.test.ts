@@ -40,9 +40,69 @@ describe('makeOpenAPIDoc', () => {
             responses: {},
             summary: '',
             tags: [],
+            parameters: [],
           },
         },
       },
     } satisfies OpenAPIV3.Document<any>)
+  })
+
+  describe('Query Parameters', () => {
+    it('should generate paremeter entries for queryParameters', async () => {
+      // Given
+      const server = await makeDecoyServer({
+        impl: { registerRoute: () => null } as unknown as DuckDecoyHttpTransport,
+        endpoints: {
+          '/auth/session': {
+            method: 'GET',
+            docs: {
+              queryParameters: {
+                ID: 'string',
+                hash: 'string',
+              },
+            },
+            handler: async ({ response }: EndpointHandlerParams) => {
+              response.encode()
+            },
+          },
+        },
+      })
+
+      // When
+      const openApiDoc = makeOpenAPIDoc(server)
+
+      // Then
+      expect(openApiDoc).toEqual({
+        openapi: '3.1.0',
+        components: {
+          schemas: {},
+        },
+        info: {
+          description: '',
+          title: '',
+          version: '0.1.0',
+        },
+        paths: {
+          '/auth/session': {
+            get: {
+              description: '',
+              parameters: [
+                {
+                  name: 'ID',
+                  in: 'query',
+                },
+                {
+                  name: 'hash',
+                  in: 'query',
+                },
+              ],
+              responses: {},
+              summary: '',
+              tags: [],
+            },
+          },
+        },
+      } satisfies OpenAPIV3.Document<any>)
+    })
   })
 })

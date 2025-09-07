@@ -3,7 +3,7 @@ import path from 'node:path'
 import { DuckDecoyHttpTransport, makeDecoyServer } from 'duck-decoy'
 import { describe, it, expect } from 'vitest'
 import { EndpointHandlerParams } from '../../duck-decoy/dist/src/endpoint'
-import { duckDecoySwaggerPlugin, makeOpenAPIDoc } from '@src/index'
+import { duckDecoySwaggerPlugin } from '@src/index'
 import swaggerUiDist from 'swagger-ui-dist'
 
 describe('makePluginRoutes', () => {
@@ -31,6 +31,13 @@ describe('makePluginRoutes', () => {
       {
         routeId: 'openapi.json-GET',
         path: '/docs/json',
+        method: 'GET',
+        docs: { ignore: true },
+        handler: expect.any(Function),
+      },
+      {
+        routeId: 'swagger-initializer.js-GET',
+        path: '/docs/swagger-initializer.js',
         method: 'GET',
         docs: { ignore: true },
         handler: expect.any(Function),

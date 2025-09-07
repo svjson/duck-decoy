@@ -24,6 +24,8 @@ export interface BaseRouteDef {
   docs?: RouteDocumentation
 }
 
+export type ParameterType = 'string'
+
 /**
  * Used to define a route in the fake server
  */
@@ -49,4 +51,5 @@ export type RouteDef<State = unknown> =
 
 export interface RouteDocumentation {
   ignore?: boolean
+  queryParameters?: Record<string, ParameterType>
 }
