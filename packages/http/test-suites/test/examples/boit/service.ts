@@ -86,34 +86,41 @@ export const makeBoITService = async (
           }
         },
       },
-      '/GetCustomerBookings': async ({ request, response, state }) => {
-        const bookings = await each('booking')
-          .from(state.bookings.find({ customerId: request.context.customerId }))
-          .with('group', ({ booking }) =>
-            state.resourceGroups.findOne(booking.resourceId)
-          )
-          .with('location', ({ group }) => state.locations.findOne(group.locationId))
-          .with('slotConfig', ({ group }) =>
-            state.timeSlotConfigs.findOne(group.slotConfigId)
-          )
-          .with(
-            'slot',
-            ({ slotConfig, booking }) => slotConfig.slots[booking.timeSlotIndex]
-          )
-          .select(({ booking, group, location, slot }) => ({
-            BookingId: booking.id,
-            GroupName: group.name,
-            LocationName: location.name,
-            LengthInMinutes: slot.duration,
-            StartTimeStamp: `${booking.date}T${slot.StartTime}`,
-            StartTime: slot.StartTime,
-            StopTime: slot.StopTime,
-            Unbookable: booking.isCancellable,
-            IsReleased: booking.isReleased,
-            IsUsed: booking.isUsed,
-          }))
+      '/GetCustomerBookings': {
+        docs: {
+          queryParameters: {
+            Token: 'string',
+          },
+        },
+        handler: async ({ request, response, state }) => {
+          const bookings = await each('booking')
+            .from(state.bookings.find({ customerId: request.context.customerId }))
+            .with('group', ({ booking }) =>
+              state.resourceGroups.findOne(booking.resourceId)
+            )
+            .with('location', ({ group }) => state.locations.findOne(group.locationId))
+            .with('slotConfig', ({ group }) =>
+              state.timeSlotConfigs.findOne(group.slotConfigId)
+            )
+            .with(
+              'slot',
+              ({ slotConfig, booking }) => slotConfig.slots[booking.timeSlotIndex]
+            )
+            .select(({ booking, group, location, slot }) => ({
+              BookingId: booking.id,
+              GroupName: group.name,
+              LocationName: location.name,
+              LengthInMinutes: slot.duration,
+              StartTimeStamp: `${booking.date}T${slot.StartTime}`,
+              StartTime: slot.StartTime,
+              StopTime: slot.StopTime,
+              Unbookable: booking.isCancellable,
+              IsReleased: booking.isReleased,
+              IsUsed: booking.isUsed,
+            }))
 
-        response.status(200).body(bookings)
+          response.status(200).body(bookings)
+        },
       },
       '/GetCustomerResources': async ({ request, response, state }) => {
         const categories = await from(
@@ -145,54 +152,74 @@ export const makeBoITService = async (
 
         response.status(200).body(categories)
       },
-      '/GetCalendarData': async ({ request, response, state }) => {
-        const { DateFrom, DateTo, Groups } = request.queryParameters
-        const groupIds = JSON.parse(Groups).map((id: string) => parseInt(id))
-        const resources = await state.resourceGroups.find({ id: { in: groupIds } })
+      '/GetCalendarData': {
+        docs: {
+          queryParameters: {
+            Token: 'string',
+            DateFrom: 'string',
+            DateTo: 'string',
+            Groups: 'string',
+          },
+        },
+        handler: async ({ request, response, state }) => {
+          const { DateFrom, DateTo, Groups } = request.queryParameters
+          const groupIds = JSON.parse(Groups).map((id: string) => parseInt(id))
+          const resources = await state.resourceGroups.find({ id: { in: groupIds } })
 
-        response.status(200).body({
-          IntervalPatterns: await each('resource')
-            .from(resources)
-            .groupBy(['slotConfigId', '_resources'], (resource) => resource.slotConfigId)
-            .with('slotConfig', ({ slotConfigId }) =>
-              state.timeSlotConfigs.findOne(slotConfigId)
-            )
-            .select(({ slotConfig }) => ({
-              Id: slotConfig.id,
-              Intervals: slotConfig.slots.map((slot, i) => ({
-                PassNo: i,
-                StartTime: slot.StartTime,
-                LengthInMinutes: slot.duration,
-              })),
-            })),
-          Days: await each('date')
-            .from(datesBetween(DateFrom, DateTo))
-            .with('bookings', ({ date }) => state.bookings.find({ date }))
-            .select(async ({ date, bookings }) => ({
-              Date: date,
-              NumberOfCustomerBookings: bookings.length,
-              DayGroups: await each('resource')
-                .from(resources)
-                .with('slotConfig', ({ resource }) =>
-                  state.timeSlotConfigs.findOne(resource.slotConfigId)
-                )
-                .with('bookings', ({ resource }) =>
-                  bookings.filter((b) => b.resourceId === resource.id)
-                )
-                .select(({ resource, slotConfig, bookings }) => ({
-                  GroupId: resource.id,
-                  IntervalPatternId: slotConfig.id,
-                  BookablePasses: slotConfig.slots.map((_, i) => ({ No: i })),
-                  CustomerBookings: bookings.map((b) => ({
-                    BookingId: b.id,
-                    PassNo: b.timeSlotIndex,
-                    Unbookable: b.isCancellable,
-                  })),
+          response.status(200).body({
+            IntervalPatterns: await each('resource')
+              .from(resources)
+              .groupBy(
+                ['slotConfigId', '_resources'],
+                (resource) => resource.slotConfigId
+              )
+              .with('slotConfig', ({ slotConfigId }) =>
+                state.timeSlotConfigs.findOne(slotConfigId)
+              )
+              .select(({ slotConfig }) => ({
+                Id: slotConfig.id,
+                Intervals: slotConfig.slots.map((slot, i) => ({
+                  PassNo: i,
+                  StartTime: slot.StartTime,
+                  LengthInMinutes: slot.duration,
                 })),
-            })),
-        })
+              })),
+            Days: await each('date')
+              .from(datesBetween(DateFrom, DateTo))
+              .with('bookings', ({ date }) => state.bookings.find({ date }))
+              .select(async ({ date, bookings }) => ({
+                Date: date,
+                NumberOfCustomerBookings: bookings.length,
+                DayGroups: await each('resource')
+                  .from(resources)
+                  .with('slotConfig', ({ resource }) =>
+                    state.timeSlotConfigs.findOne(resource.slotConfigId)
+                  )
+                  .with('bookings', ({ resource }) =>
+                    bookings.filter((b) => b.resourceId === resource.id)
+                  )
+                  .select(({ resource, slotConfig, bookings }) => ({
+                    GroupId: resource.id,
+                    IntervalPatternId: slotConfig.id,
+                    BookablePasses: slotConfig.slots.map((_, i) => ({ No: i })),
+                    CustomerBookings: bookings.map((b) => ({
+                      BookingId: b.id,
+                      PassNo: b.timeSlotIndex,
+                      Unbookable: b.isCancellable,
+                    })),
+                  })),
+              })),
+          })
+        },
       },
       '/Book': {
+        docs: {
+          queryParameters: {
+            customerId: 'string',
+            GroupId: 'string',
+            StartTimeStamp: 'string',
+          },
+        },
         handler: async ({ request, response, state }) => {
           const { customerId, GroupId, StartTimeStamp } = request.queryParameters
 

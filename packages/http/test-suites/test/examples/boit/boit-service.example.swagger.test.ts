@@ -59,7 +59,20 @@ HTTP_ADAPTERS.forEach((transport) => {
                 responses: {},
                 summary: '',
                 tags: [],
-                parameters: [],
+                parameters: [
+                  {
+                    name: 'customerId',
+                    in: 'query',
+                  },
+                  {
+                    name: 'GroupId',
+                    in: 'query',
+                  },
+                  {
+                    name: 'StartTimeStamp',
+                    in: 'query',
+                  },
+                ],
               },
             },
             '/GetCalendarData': {
@@ -68,7 +81,24 @@ HTTP_ADAPTERS.forEach((transport) => {
                 responses: {},
                 summary: '',
                 tags: [],
-                parameters: [],
+                parameters: [
+                  {
+                    name: 'Token',
+                    in: 'query',
+                  },
+                  {
+                    name: 'DateFrom',
+                    in: 'query',
+                  },
+                  {
+                    name: 'DateTo',
+                    in: 'query',
+                  },
+                  {
+                    name: 'Groups',
+                    in: 'query',
+                  },
+                ],
               },
             },
             '/GetCustomerBookings': {
@@ -77,7 +107,12 @@ HTTP_ADAPTERS.forEach((transport) => {
                 responses: {},
                 summary: '',
                 tags: [],
-                parameters: [],
+                parameters: [
+                  {
+                    name: 'Token',
+                    in: 'query',
+                  },
+                ],
               },
             },
             '/GetCustomerResources': {
