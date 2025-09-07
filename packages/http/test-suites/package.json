@@ -9,7 +9,7 @@
     "test:e2e": "npm run test"
   },
   "engines": {
-    "node": ">=21.2.0"
+    "node": ">=20.19.2"
   },
   "devDependencies": {
     "@duck-decoy/fastify": "*",

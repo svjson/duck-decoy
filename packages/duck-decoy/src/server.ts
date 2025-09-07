@@ -4,6 +4,7 @@ import { RequestLog } from './log'
 import { EndpointsConfiguration } from './endpoint'
 import { buildRoutes } from './endpoint/endpoint'
 import { DuckDecoyHttpTransport, resolveHttpTransport } from './http'
+import { DuckDecoyPlugin } from './plugin'
 
 /**
  * Configuration type specifying the the behavior, state and shape of
@@ -16,6 +17,7 @@ interface DuckDecoyServerConfigParams<State extends Object> {
   preHandlers: RequestPreHandler<State>[]
   endpoints: EndpointsConfiguration<State>
   routes: RouteDef<State>[]
+  plugins: DuckDecoyPlugin[]
   port: number
 }
 
@@ -30,6 +32,7 @@ type DuckDecoyServerConfig<State extends Object> = {
   preHandlers?: RequestPreHandler<State>[]
   endpoints?: EndpointsConfiguration<State>
   routes?: RouteDef<State>[]
+  plugins?: DuckDecoyPlugin[]
   port?: number
   autostart?: boolean
 }
@@ -58,6 +61,7 @@ const materializeConfiguration = async <State extends Object>(
     preHandlers: config.preHandlers ?? [],
     endpoints: config.endpoints ?? {},
     routes: config.routes ?? [],
+    plugins: config.plugins ?? [],
     port: typeof config.port === 'number' ? config.port : 0,
   }
 }
@@ -73,12 +77,23 @@ const configureRoutes = <State extends Object>(
   return routes
 }
 
-const configureEndpoints = <State>(
-  instance: DecoyServer<any>,
+const configureEndpoints = <State extends Object>(
+  instance: DecoyServer<State>,
   endpoints: EndpointsConfiguration<State>
 ) => {
   const routes = buildRoutes(endpoints)
   return configureRoutes(instance, routes)
+}
+
+const configurePlugins = <State extends Object>(
+  instance: DecoyServer<State>,
+  plugins: DuckDecoyPlugin[]
+) => {
+  const routes = []
+  for (const plugin of plugins) {
+    routes.push(...configureRoutes(instance, plugin.makePluginRoutes(instance)))
+  }
+  return routes
 }
 
 export const preHandlerEnabled = (preHandler: RequestPreHandler<any>, uri: string) => {
@@ -151,6 +166,7 @@ export class DecoyServer<State extends Object> {
     this.url = ''
     this.#routes.push(...configureEndpoints(this, config.endpoints))
     this.#routes.push(...configureRoutes(this, config.routes ?? []))
+    this.#routes.push(...configurePlugins(this, config.plugins ?? []))
   }
 
   get routes() {

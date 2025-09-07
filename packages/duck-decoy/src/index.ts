@@ -19,6 +19,7 @@ export type {
   EndpointResponseFormatter,
 } from './endpoint'
 export type { RouteDef, DynamicRouteDef, StaticRouteDef } from './route'
+export type { DuckDecoyPlugin } from './plugin'
 export type { RequestPreHandler, RequestPreHandlerFunction } from './types'
 export type { RequestLogEntry } from './log'
 export type { DuckDecoyHttpTransport, HttpServerStartOptions } from './http'
