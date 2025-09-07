@@ -1,5 +1,5 @@
 /// <reference lib="dom" />
-import { DecoyServer, DuckDecoyPlugin, RouteDef } from 'duck-decoy'
+import { DecoyServer, DuckDecoyPlugin, RouteDef, urlpath } from 'duck-decoy'
 import { makeOpenAPIDoc } from './openapi'
 import { OpenAPIV3 } from 'openapi-types'
 import swaggerUiDist from 'swagger-ui-dist'
@@ -28,6 +28,27 @@ export const duckDecoySwaggerPlugin = ({
               openApiJSON = makeOpenAPIDoc(server)
             }
             response.status(200).body(openApiJSON).encode()
+          },
+        },
+        {
+          routeId: 'swagger-initializer.js-GET',
+          method: 'GET',
+          path: `${rootPath}/swagger-initializer.js`,
+          docs: {
+            ignore: true,
+          },
+          handler: async ({ response }) => {
+            const initializerBody = [
+              'window.onload = () => {',
+              '  window.ui = SwaggerUIBundle({',
+              `    url: '${urlpath.join(server.root, rootPath, 'json')}',`,
+              "    dom_id: '#swagger-ui',",
+              '    deepLinking: true',
+              '  });',
+              '};',
+            ].join('\n')
+
+            response.status(200).body(initializerBody).encode()
           },
         },
         {
