@@ -1,6 +1,6 @@
 {
   "name": "@duck-decoy/swagger",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Swagger UI and OpenAPI generation for Duck Decoy",
   "author": "Sven Johansson",
   "license": "MIT",
