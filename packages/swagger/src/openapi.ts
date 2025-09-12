@@ -1,6 +1,5 @@
 import { OpenAPIV3 } from 'openapi-types'
-import { DecoyServer, RouteDef } from 'duck-decoy'
-import { RouteDocumentation } from '../../duck-decoy/dist/src/route/types'
+import { DecoyServer, RouteDef, RouteDocumentation } from 'duck-decoy'
 
 /**
  * Generate an OpenAPI json description of the API exposed by DecoyServer

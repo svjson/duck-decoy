@@ -6,4 +6,5 @@ export type {
   StaticDirectoryRouteDef,
   StaticFileRouteDef,
   RouteDef,
+  RouteDocumentation,
 } from './types.ts'

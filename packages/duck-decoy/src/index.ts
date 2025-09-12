@@ -29,6 +29,7 @@ export type {
   StaticDirectoryRouteDef,
   StaticFileRouteDef,
   RouteDef,
+  RouteDocumentation,
 } from './route'
 export type { RequestPreHandler, RequestPreHandlerFunction } from './types'
 export type { RequestLogEntry } from './log'
