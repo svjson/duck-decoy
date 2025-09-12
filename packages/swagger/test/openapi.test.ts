@@ -47,6 +47,54 @@ describe('makeOpenAPIDoc', () => {
     } satisfies OpenAPIV3.Document<any>)
   })
 
+  it('should add server-section if the DuckDecoy instance has defined a root url', async () => {
+    // Given
+    const server = await makeDecoyServer({
+      impl: { registerRoute: () => null } as unknown as DuckDecoyHttpTransport,
+      root: '/secret/service',
+      endpoints: {
+        '/auth/session': {
+          method: 'POST',
+          handler: async ({ response }: EndpointHandlerParams) => {
+            response.encode()
+          },
+        },
+      },
+    })
+
+    // When
+    const openApiDoc = makeOpenAPIDoc(server)
+
+    // Then
+    expect(openApiDoc).toEqual({
+      openapi: '3.1.0',
+      components: {
+        schemas: {},
+      },
+      servers: [
+        {
+          url: '/secret/service',
+        },
+      ],
+      info: {
+        description: '',
+        title: '',
+        version: '0.1.0',
+      },
+      paths: {
+        '/auth/session': {
+          post: {
+            description: '',
+            responses: {},
+            summary: '',
+            tags: [],
+            parameters: [],
+          },
+        },
+      },
+    } satisfies OpenAPIV3.Document<any>)
+  })
+
   describe('Query Parameters', () => {
     it('should generate paremeter entries for queryParameters', async () => {
       // Given
