@@ -52,6 +52,11 @@ HTTP_ADAPTERS.forEach((transport) => {
             title: '',
             version: '0.1.0',
           },
+          servers: [
+            {
+              url: service.root,
+            },
+          ],
           paths: {
             '/Book': {
               get: {
