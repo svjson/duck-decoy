@@ -34,6 +34,8 @@ jobs:
             name: "@duck-decoy/fastify"
           - pkg: packages/http/adapter-koa
             name: "@duck-decoy/koa"
+          - pkg: packages/swagger
+            name: "@duck-decoy/swagger
     steps:
       - uses: actions/checkout@v4
   
