@@ -1,6 +1,6 @@
 {
   "name": "duck-decoy",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Simple HTTP mocks and fakes",
   "author": "Sven Johansson",
   "license": "MIT",
