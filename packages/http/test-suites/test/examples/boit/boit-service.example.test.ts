@@ -204,7 +204,7 @@ HTTP_ADAPTERS.forEach((transport) => {
         expect(resourcesResponse.data).toEqual([])
       })
 
-      it('should respond with array of single resource at /GetCustomerResources when custommer has access to one bookable object', async () => {
+      it('should respond with array of single resource at /GetCustomerResources when customer has access to one bookable object', async () => {
         // Given
         const authenticatedToken = await authenticatedTokenFor(CUSTOMER_ID_1)
 
@@ -237,7 +237,7 @@ HTTP_ADAPTERS.forEach((transport) => {
         ])
       })
 
-      it('should respond with array of two  resources at /GetCustomerResources when custommer has access to two bookable objects', async () => {
+      it('should respond with array of two resources at /GetCustomerResources when customer has access to two bookable objects', async () => {
         // Given
         const authenticatedToken = await authenticatedTokenFor(CUSTOMER_ID_2)
 
