@@ -1,0 +1,4 @@
+packages:
+  - packages/duck-decoy
+  - packages/http/*
+  - packages/swagger

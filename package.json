@@ -4,25 +4,23 @@
   "private": true,
   "license": "MIT",
   "author": "Sven Johansson",
-  "packageManager": "npm@>=10.8.2",
+  "packageManager": "pnpm@10.22.0",
   "engines": {
     "node": ">=18"
   },
-  "workspaces": [
-    "packages/duck-decoy",
-    "packages/http/*",
-    "packages/swagger"
-  ],
   "scripts": {
-    "build": "npm run build:core && npm run build:http-adapters && npm run build:plugins",
-    "build:core": "npm run --workspace=duck-decoy build --if-present",
-    "build:http-adapters": "npm run --workspace=@duck-decoy/fastify --workspace=@duck-decoy/koa build --if-present",
-    "build:plugins": "npm run --workspace=@duck-decoy/swagger build",
-    "ci:test": "npm run --workspaces ci:test --if-present",
-    "lint": "npm run --workspaces lint --if-present",
-    "test": "npm run --workspaces test --if-present",
-    "test:unit": "npm run --workspaces test:unit",
-    "test:e2e": "npm run --workspaces test:e2e --if-present",
-    "typecheck": "npm run --workspaces typecheck --if-present"
+    "build": "pnpm build:core && pnpm build:http-adapters && pnpm build:plugins",
+    "build:core": "pnpm --filter=duck-decoy build",
+    "build:http-adapters": "pnpm --filter=@duck-decoy/fastify --filter=@duck-decoy/koa build",
+    "build:plugins": "pnpm --filter=@duck-decoy/swagger build",
+    "ci:test": "pnpm -r ci:test",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "test:unit": "pnpm -r test:unit",
+    "test:e2e": "pnpm -r test:e2e",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "vite": "^7.2.2"
   }
 }

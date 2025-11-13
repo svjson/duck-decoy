@@ -8,23 +8,31 @@ jobs:
   build_and_test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-  
-      - name: Use node
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.18
+          run_install: false
+          cache-dependency-path: ./pnpm-lock.yaml
+
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-  
+          node-version: 24
+          cache: pnpm
+
       - name: Install dependencies
-        run: npm ci
-  
+        run: pnpm install --frozen-lockfile --prefer-offline
+
       - name: Lint
-        run: npm run lint
-  
+        run: pnpm lint
+
       - name: Build
-        run: npm run build
-  
+        run: pnpm build
+
       - name: Test
-        run: npm run ci:test
-  
+        run: pnpm ci:test
+

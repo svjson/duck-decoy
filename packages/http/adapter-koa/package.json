@@ -23,11 +23,11 @@
     }
   },
   "scripts": {
-    "build": "npm run typecheck && vite build",
-    "lint": "npx eslint .",
-    "prepack": "npm run build",
+    "build": "pnpm typecheck && vite build",
+    "lint": "pnpm exec eslint .",
+    "prepack": "pnpm build",
     "test": "vitest run --reporter verbose",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "pnpm exec tsc --noEmit"
   },
   "peerDependencies": {
     "@koa/bodyparser": "^6.0.0",
@@ -47,7 +47,10 @@
     "@types/koa-mount": "^4.0.5",
     "@types/koa-send": "^4.1.6",
     "@types/koa-static": "^4.0.4",
-    "duck-decoy": "^0.1.5",
+    "@types/node": "^24.2.0",
+    "duck-decoy": "workspace:*",
+    "vite-plugin-dts": "^4.5.4",
+    "vite-tsconfig-paths": "^5.1.4",
     "koa": "^3.0.1",
     "koa-send": "^5.0.1",
     "koa-static": "^5.0.0",
