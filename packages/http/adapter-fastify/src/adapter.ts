@@ -128,6 +128,8 @@ export class DuckDecoyFastify implements DuckDecoyHttpTransport {
         if (route.responseFormatter) {
           const formatted = await route.responseFormatter({
             payload: ddResponse._body,
+            request: ddRequest,
+            response: ddResponse,
             state: dd.state,
           })
           ddResponse.body(formatted)

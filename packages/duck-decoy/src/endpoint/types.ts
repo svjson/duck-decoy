@@ -66,8 +66,16 @@ export type EndpointHandlerFunction<State> = (
   params: EndpointHandlerParams<State>
 ) => Promise<void>
 
+/**
+ * Parameter object accepted by EndpointResponseFormatter
+ *
+ * Gives access to the DuckDecoyRequest, DuckDecoyResponse, the State and a
+ * shortcut to the response payload produced by a request handler.
+ */
 export interface EndpointResponseFormatterParams<State> {
   payload?: any
+  request: DuckDecoyRequest
+  response: DuckDecoyResponse
   state: State
 }
 
