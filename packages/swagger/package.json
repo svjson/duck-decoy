@@ -23,10 +23,10 @@
     }
   },
   "scripts": {
-    "build": "npm run typecheck && vite build",
+    "build": "pnpm typecheck && vite build",
     "ci:test": "vitest run --reporter=dot --no-color",
-    "lint": "npx eslint .",
-    "prepack": "npm run build",
+    "lint": "pnpm exec eslint .",
+    "prepack": "pnpm build",
     "test": "vitest run --reporter verbose",
     "test:unit": "vitest run test/unit --reporter verbose",
     "test:e2e": "vitest run test/e2e --reporter verbose",

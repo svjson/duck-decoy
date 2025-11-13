@@ -5,7 +5,11 @@
   "author": "Sven Johansson",
   "license": "MIT",
   "type": "module",
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -35,7 +39,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.2.0",
-    "eslint": "^9.33.0",
+    "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-n": "^17.21.3",

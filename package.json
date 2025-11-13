@@ -21,6 +21,12 @@
     "typecheck": "pnpm -r typecheck"
   },
   "devDependencies": {
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-n": "^17.23.1",
+    "globals": "^16.5.0",
+    "typescript-eslint": "^8.46.4",
     "vite": "^7.2.2"
   }
 }
