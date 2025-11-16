@@ -210,4 +210,19 @@ describe('ArrayCollection', () => {
       expect((await coll.find()).map((r) => r.id)).toEqual([1, 2, 4, 5])
     })
   })
+
+  describe('clear', () => {
+    it('should delete all elements', async () => {
+      // Given
+      const coll = new ArrayCollection(ANIMAL_SPECIES_RECORDS)
+
+      // When
+      const deleted = await coll.clear()
+
+      // Then
+      expect(deleted).toEqual(ANIMAL_SPECIES_RECORDS)
+      expect(await coll.count()).toEqual(0)
+      expect((await coll.find()).map((r) => r.id)).toEqual([])
+    })
+  })
 })

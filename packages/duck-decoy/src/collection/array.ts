@@ -46,6 +46,12 @@ export class ArrayCollection<
     return this.config?.none as None
   }
 
+  async clear() {
+    const deleted = [...this.records]
+    this.records.length = 0
+    return deleted
+  }
+
   async count() {
     return this.records.length
   }
