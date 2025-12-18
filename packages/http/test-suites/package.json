@@ -1,6 +1,6 @@
 {
   "name": "@duck-decoy/http-test-suites",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "ci:test": "vitest run --reporter=dot --no-color",
@@ -12,11 +12,11 @@
     "node": ">=24"
   },
   "devDependencies": {
-    "@duck-decoy/fastify": "*",
-    "@duck-decoy/koa": "*",
-    "@duck-decoy/swagger": "*",
+    "@duck-decoy/fastify": "workspace:*",
+    "@duck-decoy/koa": "workspace:*",
+    "@duck-decoy/swagger": "workspace:*",
     "axios": "^1.11.0",
-    "duck-decoy": "*",
+    "duck-decoy": "workspace:*",
     "ts-node": "^10.9.2",
     "vitest": "^3.2.4"
   }

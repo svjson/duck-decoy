@@ -1,6 +1,6 @@
 {
   "name": "@duck-decoy/swagger",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Swagger UI and OpenAPI generation for Duck Decoy",
   "author": "Sven Johansson",
   "license": "MIT",
@@ -38,7 +38,7 @@
   },
   "packageManager": "npm@>=10.8.2",
   "peerDependencies": {
-    "duck-decoy": "^0.1.5"
+    "duck-decoy": "^0.2.0"
   },
   "dependencies": {
     "openapi-types": "^12.1.3",
