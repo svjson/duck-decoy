@@ -172,7 +172,7 @@ describe('ArrayCollection', () => {
     })
   })
 
-  describe('putOne', () => {
+  describe('updateOne', () => {
     it('should replace existing record', async () => {
       // Given
       const coll = new ArrayCollection(ANIMAL_SPECIES_RECORDS)
@@ -208,6 +208,38 @@ describe('ArrayCollection', () => {
       // Then
       expect(deleted).toEqual(ANIMAL_SPECIES_RECORDS.find((r) => r.id === 3))
       expect((await coll.find()).map((r) => r.id)).toEqual([1, 2, 4, 5])
+    })
+  })
+
+  describe('reset', () => {
+    it('should restore initial records after clearing collection', async () => {
+      // Given
+      const coll = new ArrayCollection(ANIMAL_SPECIES_RECORDS)
+
+      // When
+      await coll.clear()
+      await coll.reset()
+
+      // Then
+      expect(await coll.count()).toEqual(5)
+      expect(await coll.find()).toEqual(ANIMAL_SPECIES_RECORDS)
+    })
+
+    it('should restore initial records after modifying rows', async () => {
+      // Given
+      const coll = new ArrayCollection(ANIMAL_SPECIES_RECORDS)
+
+      // When
+      await coll.updateOne(1, Object.assign({}, ANIMAL_SPECIES_RECORDS[0], { legs: 3 }))
+      await coll.updateOne(
+        2,
+        Object.assign({}, ANIMAL_SPECIES_RECORDS[1], { class: 'Redacted' })
+      )
+      await coll.reset()
+
+      // Then
+      expect(await coll.count()).toEqual(5)
+      expect(await coll.find()).toEqual(ANIMAL_SPECIES_RECORDS)
     })
   })
 

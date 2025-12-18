@@ -227,4 +227,74 @@ describe('KnexCollection', () => {
       })
     })
   })
+
+  describe('updateOne', () => {
+    it('should update only the row with matching identity', async () => {
+      // Given
+      const coll = new KnexCollection(
+        await getTestDB(),
+        'species',
+        ANIMAL_SPECIES_RECORDS
+      )
+      await coll.isInitialized()
+
+      // When
+      await coll.updateOne(1, Object.assign({}, ANIMAL_SPECIES_RECORDS[0], { legs: 3 }))
+
+      // Then
+      expect(await coll.count()).toEqual(5)
+      expect(await coll.find()).toEqual([
+        {
+          id: 1,
+          name: 'Goldfish',
+          class: 'Actinopterygii',
+          diet: 'Omnivore',
+          legs: 3,
+        },
+        ...ANIMAL_SPECIES_RECORDS.slice(1),
+      ])
+    })
+  })
+
+  describe('reset', () => {
+    it('should restore initial records after clearing collection', async () => {
+      // Given
+      const coll = new KnexCollection(
+        await getTestDB(),
+        'species',
+        ANIMAL_SPECIES_RECORDS
+      )
+      await coll.isInitialized()
+
+      // When
+      await coll.clear()
+      await coll.reset()
+
+      // Then
+      expect(await coll.count()).toEqual(5)
+      expect(await coll.find()).toEqual(ANIMAL_SPECIES_RECORDS)
+    })
+
+    it('should restore initial records after modifying rows', async () => {
+      // Given
+      const coll = new KnexCollection(
+        await getTestDB(),
+        'species',
+        ANIMAL_SPECIES_RECORDS
+      )
+      await coll.isInitialized()
+
+      // When
+      await coll.updateOne(1, Object.assign({}, ANIMAL_SPECIES_RECORDS[0], { legs: 3 }))
+      await coll.updateOne(
+        2,
+        Object.assign({}, ANIMAL_SPECIES_RECORDS[1], { class: 'Redacted' })
+      )
+      await coll.reset()
+
+      // Then
+      expect(await coll.count()).toEqual(5)
+      expect(await coll.find()).toEqual(ANIMAL_SPECIES_RECORDS)
+    })
+  })
 })

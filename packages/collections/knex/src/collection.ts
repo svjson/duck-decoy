@@ -95,6 +95,16 @@ export class KnexCollection<
   }
 
   /**
+   * Resets the collection contents back to its initial values.
+   *
+   * This does not affect the table state of the SQL backend, ie any autoinc
+   * generators.
+   */
+  async reset(): Promise<void> {
+    await this.#_populate()
+  }
+
+  /**
    * Clear the contents of this collection.
    *
    * Deletes all rows in the database table.
@@ -210,7 +220,9 @@ export class KnexCollection<
 
     const actualRow = row as T
     Object.assign(actualRow, record)
-    await this.knex(this.table).update(actualRow)
+    await this.knex(this.table)
+      .update(actualRow)
+      .where({ [this.identity]: actualRow[this.identity] })
     return actualRow
   }
 

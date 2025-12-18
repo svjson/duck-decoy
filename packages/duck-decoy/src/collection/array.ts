@@ -30,6 +30,7 @@ export class ArrayCollection<
   IdentityType = any,
   None = undefined,
 > extends RecordCollection<T, IdentityKey, IdentityType, None> {
+  #initialRecords: T[]
   records: T[]
   config: ArrayCollectionConfiguration<IdentityKey, None>
   idGenerator: IdGenerator
@@ -46,6 +47,7 @@ export class ArrayCollection<
   ) {
     super()
     this.records = [...(records ?? [])]
+    this.#initialRecords = this.records.map((r) => structuredClone(r))
     this.config = {
       identity: (config?.identity ?? 'id') as IdentityKey,
       none: config?.none!,
@@ -64,17 +66,14 @@ export class ArrayCollection<
   }
 
   /**
-   * @see RecordCollection.identity
+   * Reset the collection state to its initial state
    */
-  public get identity(): IdentityKey {
-    return this.config.identity
-  }
-
-  /**
-   * @see RecordCollection.none
-   */
-  public get none(): None {
-    return this.config?.none as None
+  async reset() {
+    await this.clear()
+    this.idGenerator.reset()
+    for (const r of this.#initialRecords) {
+      await this.insert(r)
+    }
   }
 
   /**
@@ -175,5 +174,19 @@ export class ArrayCollection<
 
     this.records[index] = updated
     return updated
+  }
+
+  /**
+   * @see RecordCollection.identity
+   */
+  public get identity(): IdentityKey {
+    return this.config.identity
+  }
+
+  /**
+   * @see RecordCollection.none
+   */
+  public get none(): None {
+    return this.config?.none as None
   }
 }

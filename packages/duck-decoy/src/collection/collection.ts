@@ -25,6 +25,12 @@ export abstract class RecordCollection<
   abstract isInitialized(): Promise<void>
 
   /**
+   * Reset the collection state/contents back to the initial construction
+   * state.
+   */
+  abstract reset(): Promise<void>
+
+  /**
    * Clear the collection of all records and return deleted records.
    *
    * Return value may vary depending on implementation.

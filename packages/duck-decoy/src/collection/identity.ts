@@ -1,5 +1,6 @@
 export interface IdGenerator {
   next: () => any
+  reset: () => void
 }
 
 export const makeAutoIncGenerator = (records: any[], identity: string) => {
@@ -10,6 +11,9 @@ export const makeAutoIncGenerator = (records: any[], identity: string) => {
 
   return {
     next: () => counter++,
+    reset: () => {
+      counter = 0
+    },
   }
 }
 
