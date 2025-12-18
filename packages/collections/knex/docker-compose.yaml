@@ -1,0 +1,28 @@
+services:
+  sql:
+    image: ${SQLSERVER_IMAGE:-mcr.microsoft.com/azure-sql-edge}
+    platform: ${SQLSERVER_PLATFORM:-}
+    container_name: dd-knex-mssql
+    user: "${SQLSERVER_USER:-root}"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=s3cr3t_p455w0rd
+      - MSSQL_PID=Developer
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -Q "SELECT 1"
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks:
+      - dd-knex-mssql
+    ports:
+      - '1444:1433'
+    volumes:
+      - dd-knex-mssql:/var/opt/mssql
+
+networks:
+  dd-knex-mssql:
+    driver: bridge
+
+volumes:
+  dd-knex-mssql:

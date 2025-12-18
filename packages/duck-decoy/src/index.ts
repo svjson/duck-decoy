@@ -34,3 +34,4 @@ export type {
 export type { RequestPreHandler, RequestPreHandlerFunction } from './types'
 export type { RequestLogEntry } from './log'
 export type { DuckDecoyHttpTransport, HttpServerStartOptions } from './http'
+export type { DefaultRecordKey, RecordCriteria, WithoutIdentity } from './collection'

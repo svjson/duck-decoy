@@ -19,6 +19,12 @@ export abstract class RecordCollection<
   None = undefined,
 > {
   /**
+   * Returns a promise that will be resolved once this RecordCollection
+   * instance has completed its initialization and state setup.
+   */
+  abstract isInitialized(): Promise<void>
+
+  /**
    * Clear the collection of all records and return deleted records.
    *
    * Return value may vary depending on implementation.
@@ -71,7 +77,7 @@ export abstract class RecordCollection<
    *
    * @return Promise resolving to the matching record, or `None` if no record matched.
    */
-  abstract findOne(criteria: RecordCriteria<IdentityType>): Promise<T | None>
+  abstract findOne(criteria?: RecordCriteria<IdentityType>): Promise<T | None>
 
   /**
    * Find and update the frist record matching the provided criteria, if any
@@ -90,6 +96,7 @@ export abstract class RecordCollection<
    * Get the identity key for records in this collection.
    */
   abstract get identity(): IdentityKey
+
   /**
    * Get the value/null-object representing "no record" in this collection.
    */
