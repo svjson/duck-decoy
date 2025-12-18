@@ -1,10 +1,11 @@
-import { RequestPreHandler } from './types'
-import { RouteDef } from './route'
-import { RequestLog } from './log'
+import { RecordCollection } from './collection'
 import { EndpointsConfiguration } from './endpoint'
 import { buildRoutes } from './endpoint/endpoint'
 import { DuckDecoyHttpTransport, resolveHttpTransport } from './http'
+import { RequestLog } from './log'
 import { DuckDecoyPlugin } from './plugin'
+import { RouteDef } from './route'
+import { RequestPreHandler } from './types'
 
 /**
  * Configuration type specifying the the behavior, state and shape of
@@ -177,6 +178,18 @@ export class DecoyServer<State extends Object> {
   }
 
   /**
+   * Block until all RecordCollection instances in State have finished
+   * their initialization process.
+   */
+  async #initializationComplete(): Promise<void> {
+    await Promise.all(
+      Object.values(this.state)
+        .filter((stateVal) => stateVal instanceof RecordCollection)
+        .map((stateVal) => stateVal.isInitialized())
+    )
+  }
+
+  /**
    * The configured routes of this instance
    */
   get routes() {
@@ -200,6 +213,7 @@ export class DecoyServer<State extends Object> {
     await this.impl.start({ port: this.port })
     this.url = `http://localhost:${this.impl.port()}`
     this.port = this.impl.port()
+    await this.#initializationComplete()
   }
 
   /**
