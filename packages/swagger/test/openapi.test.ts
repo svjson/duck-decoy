@@ -1,8 +1,11 @@
-import { DuckDecoyHttpTransport, makeDecoyServer } from 'duck-decoy'
-import { describe, it, expect } from 'vitest'
-import { EndpointHandlerParams } from '../../duck-decoy/dist/src/endpoint'
 import { makeOpenAPIDoc } from '@src/index'
+import {
+  DuckDecoyHttpTransport,
+  EndpointHandlerParams,
+  makeDecoyServer,
+} from 'duck-decoy'
 import { OpenAPIV3 } from 'openapi-types'
+import { describe, expect, it } from 'vitest'
 
 describe('makeOpenAPIDoc', () => {
   it('should generate an openapi.json data structure from DuckDecoy instance', async () => {

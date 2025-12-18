@@ -1,11 +1,11 @@
 import {
   DefaultRecordKey,
+  Query,
   RecordCollection,
   RecordCriteria,
   WithoutIdentity,
 } from 'duck-decoy'
 import { Knex } from 'knex'
-import { Query } from 'node_modules/duck-decoy/dist/src/collection/query'
 
 interface KnexCollectionConfiguration<IdentityKey, None> {
   identity: IdentityKey

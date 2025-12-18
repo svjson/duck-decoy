@@ -20,7 +20,7 @@
     }
   },
   "scripts": {
-    "build": "pnpm typecheck && vite build",
+    "build": "pnpm typecheck && tsup",
     "ci:test": "vitest run --reporter=dot --no-color",
     "lint": "pnpm exec eslint .",
     "prepack": "pnpm build",
@@ -44,8 +44,8 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-n": "^17.21.3",
     "prettier": "^3.6.2",
+    "tsup": "^8.5.1",
     "typescript-eslint": "^8.39.0",
-    "vite-plugin-dts": "^4.5.4",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
   }

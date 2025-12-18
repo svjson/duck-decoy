@@ -1,37 +1,44 @@
-export {
-  createFakeServer,
-  makeDecoyServer,
-  DecoyServer,
-  preHandlerEnabled,
-} from './server'
+export { ArrayCollection, RecordCollection } from './collection'
+export { DuckDecoyRequest, DuckDecoyResponse } from './http'
+export { RequestLog } from './log'
 export {
   isDynamicRoute,
   isStaticDirectoryRoute,
   isStaticFileRoute,
-  urlpath,
+  urlpath
 } from './route'
-export { RequestLog } from './log'
-export { ArrayCollection, RecordCollection } from './collection'
-export { DuckDecoyResponse, DuckDecoyRequest } from './http'
-export { datesBetween } from './types'
+export {
+  createFakeServer,
+  DecoyServer,
+  makeDecoyServer,
+  preHandlerEnabled
+} from './server'
 export { each, from } from './state'
+export { datesBetween } from './types'
 
 export type {
-  EndpointDeclaration,
+  DefaultRecordKey,
+  Query,
+  RecordCriteria,
+  WithoutIdentity
+} from './collection'
+export type {
   EndpointConfiguration,
-  EndpointsConfiguration,
+  EndpointDeclaration,
   EndpointHandlerFunction,
+  EndpointHandlerParams,
   EndpointResponseFormatter,
+  EndpointsConfiguration
 } from './endpoint'
+export type { DuckDecoyHttpTransport, HttpServerStartOptions } from './http'
+export type { RequestLogEntry } from './log'
 export type { DuckDecoyPlugin } from './plugin'
 export type {
   DynamicRouteDef,
-  StaticDirectoryRouteDef,
-  StaticFileRouteDef,
   RouteDef,
   RouteDocumentation,
+  StaticDirectoryRouteDef,
+  StaticFileRouteDef
 } from './route'
 export type { RequestPreHandler, RequestPreHandlerFunction } from './types'
-export type { RequestLogEntry } from './log'
-export type { DuckDecoyHttpTransport, HttpServerStartOptions } from './http'
-export type { DefaultRecordKey, RecordCriteria, WithoutIdentity } from './collection'
+

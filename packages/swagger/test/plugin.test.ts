@@ -1,10 +1,13 @@
+import { duckDecoySwaggerPlugin } from '@src/index'
+import {
+  DuckDecoyHttpTransport,
+  EndpointHandlerParams,
+  makeDecoyServer,
+} from 'duck-decoy'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
-import { DuckDecoyHttpTransport, makeDecoyServer } from 'duck-decoy'
-import { describe, it, expect } from 'vitest'
-import { EndpointHandlerParams } from '../../duck-decoy/dist/src/endpoint'
-import { duckDecoySwaggerPlugin } from '@src/index'
 import swaggerUiDist from 'swagger-ui-dist'
+import { describe, expect, it } from 'vitest'
 
 describe('makePluginRoutes', () => {
   it('should generate routes for openapi.json and Swagger UI', async () => {

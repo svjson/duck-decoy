@@ -176,20 +176,35 @@ export class DecoyServer<State extends Object> {
     this.#routes.push(...configurePlugins(this, config.plugins ?? []))
   }
 
+  /**
+   * The configured routes of this instance
+   */
   get routes() {
     return this.#routes
   }
 
+  /**
+   * Reset/clear the request log of this instance
+   */
   reset() {
     this.requestLog.reset()
   }
 
+  /**
+   * Start the Duck Decoy service.
+   *
+   * The `url` and `port` properties of the server instance will have
+   * been set when this method exits.
+   */
   async start() {
     await this.impl.start({ port: this.port })
     this.url = `http://localhost:${this.impl.port()}`
     this.port = this.impl.port()
   }
 
+  /**
+   * Shut down the HTTP listener
+   */
   async shutdown() {
     await this.impl.shutdown()
   }
