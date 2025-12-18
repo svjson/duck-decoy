@@ -1,5 +1,6 @@
-import { DecoyServer } from './server'
 import { RouteDef } from './route'
+import { DecoyServer } from './server'
+import { DefaultState } from './types'
 
 export type HttpMethod = 'GET' | 'PUT' | 'POST' | 'DELETE' | 'HEAD' | 'OPTIONS' | 'PATCH'
 
@@ -19,7 +20,7 @@ export const METHODS: HttpMethod[] = [
  */
 export interface DuckDecoyHttpTransport {
   name: string
-  registerRoute<State extends Object>(
+  registerRoute<State extends DefaultState>(
     route: RouteDef<State>,
     dd: DecoyServer<State>
   ): void

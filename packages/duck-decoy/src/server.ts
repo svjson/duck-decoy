@@ -5,13 +5,13 @@ import { DuckDecoyHttpTransport, resolveHttpTransport } from './http'
 import { RequestLog } from './log'
 import { DuckDecoyPlugin } from './plugin'
 import { RouteDef } from './route'
-import { RequestPreHandler } from './types'
+import { DefaultState, RequestPreHandler } from './types'
 
 /**
  * Configuration type specifying the the behavior, state and shape of
  * of a DuckDecoy instance.
  */
-interface DuckDecoyServerConfigParams<State extends Object> {
+interface DuckDecoyServerConfigParams<State extends DefaultState> {
   impl: DuckDecoyHttpTransport
   root: string
   state: State
@@ -26,7 +26,7 @@ interface DuckDecoyServerConfigParams<State extends Object> {
  * Configuration type specifying the the behavior, state and shape of
  * of a DuckDecoy instance with optional properties.
  */
-type DuckDecoyServerConfig<State extends Object> = {
+type DuckDecoyServerConfig<State extends DefaultState> = {
   impl?: string | DuckDecoyHttpTransport
   root?: string
   state?: State
@@ -52,7 +52,7 @@ type DuckDecoyServerConfig<State extends Object> = {
  * @return A DuckDecoyServerConfigParams with all properties set
  * with concrete values.
  */
-const materializeConfiguration = async <State extends Object>(
+const materializeConfiguration = async <State extends DefaultState>(
   config: DuckDecoyServerConfig<State>
 ): Promise<DuckDecoyServerConfigParams<State>> => {
   return {
@@ -67,7 +67,7 @@ const materializeConfiguration = async <State extends Object>(
   }
 }
 
-const configureRoutes = <State extends Object>(
+const configureRoutes = <State extends DefaultState>(
   instance: DecoyServer<State>,
   routes: RouteDef<State>[]
 ): RouteDef<State>[] => {
@@ -78,7 +78,7 @@ const configureRoutes = <State extends Object>(
   return routes
 }
 
-const configureEndpoints = <State extends Object>(
+const configureEndpoints = <State extends DefaultState>(
   instance: DecoyServer<State>,
   endpoints: EndpointsConfiguration<State>
 ) => {
@@ -86,7 +86,7 @@ const configureEndpoints = <State extends Object>(
   return configureRoutes(instance, routes)
 }
 
-const configurePlugins = <State extends Object>(
+const configurePlugins = <State extends DefaultState>(
   instance: DecoyServer<State>,
   plugins: DuckDecoyPlugin[]
 ) => {
@@ -128,7 +128,7 @@ export const preHandlerEnabled = (preHandler: RequestPreHandler<any>, uri: strin
  * It also maintains a request log for inspection and verification of
  * interactions.
  */
-export class DecoyServer<State extends Object> {
+export class DecoyServer<State extends DefaultState> {
   /**
    * The HTTP transport implementation, e.g, Fastify or Koa
    */
@@ -237,7 +237,7 @@ export class DecoyServer<State extends Object> {
  * fakeServerInstance.reset() should be called after each test to
  * clear all logged requests.
  */
-export const createFakeServer = async <State extends Object>(
+export const createFakeServer = async <State extends DefaultState>(
   config: DuckDecoyServerConfig<State> = {}
 ) => {
   const serverConfig = await materializeConfiguration(config)

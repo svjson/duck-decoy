@@ -40,5 +40,5 @@ export type {
   StaticDirectoryRouteDef,
   StaticFileRouteDef
 } from './route'
-export type { RequestPreHandler, RequestPreHandlerFunction } from './types'
+export type { DefaultState, RequestPreHandler, RequestPreHandlerFunction } from './types'
 

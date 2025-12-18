@@ -1,5 +1,8 @@
+import bodyParser from '@koa/bodyparser'
+import KoaRouter from '@koa/router'
 import {
   DecoyServer,
+  DefaultState,
   DuckDecoyHttpTransport,
   DuckDecoyRequest,
   DuckDecoyResponse,
@@ -15,10 +18,8 @@ import {
   urlpath,
 } from 'duck-decoy'
 import Koa, { Context } from 'koa'
-import KoaRouter from '@koa/router'
-import bodyParser from '@koa/bodyparser'
-import send from 'koa-send'
 import mount from 'koa-mount'
+import send from 'koa-send'
 import serve from 'koa-static'
 import { Server } from 'node:net'
 import path from 'node:path'
@@ -68,7 +69,10 @@ export class DuckDecoyKoa implements DuckDecoyHttpTransport {
     return (this.server?.address() as any).port
   }
 
-  registerRoute<State extends Object>(route: RouteDef<State>, dd: DecoyServer<State>) {
+  registerRoute<State extends DefaultState>(
+    route: RouteDef<State>,
+    dd: DecoyServer<State>
+  ) {
     if (isDynamicRoute(route)) {
       this.registerDynamicRoute(route, dd)
     } else if (isStaticFileRoute(route)) {
@@ -78,7 +82,7 @@ export class DuckDecoyKoa implements DuckDecoyHttpTransport {
     }
   }
 
-  registerStaticFileRoute<State extends Object>(
+  registerStaticFileRoute<State extends DefaultState>(
     route: StaticFileRouteDef,
     dd: DecoyServer<State>
   ) {
@@ -90,7 +94,7 @@ export class DuckDecoyKoa implements DuckDecoyHttpTransport {
     })
   }
 
-  registerStaticDirectoryRoute<State extends Object>(
+  registerStaticDirectoryRoute<State extends DefaultState>(
     route: StaticDirectoryRouteDef,
     dd: DecoyServer<State>
   ) {
@@ -104,7 +108,7 @@ export class DuckDecoyKoa implements DuckDecoyHttpTransport {
     this.koa.use(mount(routePath, serve(route.staticRoot, { index })))
   }
 
-  registerDynamicRoute<State extends Object>(
+  registerDynamicRoute<State extends DefaultState>(
     route: DynamicRouteDef<State>,
     dd: DecoyServer<State>
   ) {

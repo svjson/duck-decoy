@@ -1,23 +1,24 @@
-import path from 'node:path'
-import Fastify, { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import '@fastify/static'
+import fastifyStatic, { FastifyStaticOptions } from '@fastify/static'
 import {
   DecoyServer,
+  DefaultState,
+  DuckDecoyHttpTransport,
   DuckDecoyRequest,
   DuckDecoyResponse,
-  DuckDecoyHttpTransport,
-  RouteDef,
-  preHandlerEnabled,
+  DynamicRouteDef,
   HttpServerStartOptions,
   isDynamicRoute,
-  DynamicRouteDef,
-  urlpath,
-  isStaticFileRoute,
   isStaticDirectoryRoute,
-  StaticFileRouteDef,
+  isStaticFileRoute,
+  preHandlerEnabled,
+  RouteDef,
   StaticDirectoryRouteDef,
+  StaticFileRouteDef,
+  urlpath,
 } from 'duck-decoy'
-import fastifyStatic, { FastifyStaticOptions } from '@fastify/static'
+import Fastify, { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
+import path from 'node:path'
 
 /**
  * Fastify-implementation of `DuckDecoyHttpTransport`
@@ -46,7 +47,10 @@ export class DuckDecoyFastify implements DuckDecoyHttpTransport {
     return (this.fastify.server.address() as any).port
   }
 
-  registerRoute<State extends Object>(route: RouteDef<State>, dd: DecoyServer<State>) {
+  registerRoute<State extends DefaultState>(
+    route: RouteDef<State>,
+    dd: DecoyServer<State>
+  ) {
     if (isDynamicRoute(route)) {
       this.registerDynamicRoute(route, dd)
     } else if (isStaticFileRoute(route)) {
@@ -56,7 +60,7 @@ export class DuckDecoyFastify implements DuckDecoyHttpTransport {
     }
   }
 
-  registerStaticFileRoute<State extends Object>(
+  registerStaticFileRoute<State extends DefaultState>(
     route: StaticFileRouteDef,
     dd: DecoyServer<State>
   ) {
@@ -66,7 +70,7 @@ export class DuckDecoyFastify implements DuckDecoyHttpTransport {
     })
   }
 
-  registerStaticDirectoryRoute<State extends Object>(
+  registerStaticDirectoryRoute<State extends DefaultState>(
     route: StaticDirectoryRouteDef,
     dd: DecoyServer<State>
   ) {
@@ -86,7 +90,7 @@ export class DuckDecoyFastify implements DuckDecoyHttpTransport {
     })
   }
 
-  registerDynamicRoute<State extends Object>(
+  registerDynamicRoute<State extends DefaultState>(
     route: DynamicRouteDef<State>,
     dd: DecoyServer<State>
   ) {

@@ -1,5 +1,7 @@
 import { EndpointHandlerParams } from './endpoint'
 
+export type DefaultState = Record<string, unknown>
+
 export type RequestPreHandlerFunction<State> = (
   params: EndpointHandlerParams<State>
 ) => Promise<void>

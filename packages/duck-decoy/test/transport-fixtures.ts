@@ -1,11 +1,12 @@
 import {
-  RouteDef,
   DecoyServer,
-  HttpServerStartOptions,
   DuckDecoyHttpTransport,
   DuckDecoyRequest,
   DuckDecoyResponse,
+  HttpServerStartOptions,
+  RouteDef,
 } from '@src/index'
+import { DefaultState } from './types'
 
 /**
  * Programmatic fake http transport implementation
@@ -25,7 +26,10 @@ export class TestHttpTransport implements DuckDecoyHttpTransport {
     return this.opts?.port || 0
   }
 
-  registerRoute<State extends Object>(route: RouteDef<State>, _dd: DecoyServer<State>) {
+  registerRoute<State extends DefaultState>(
+    route: RouteDef<State>,
+    _dd: DecoyServer<State>
+  ) {
     this.routes.push(route)
   }
 }

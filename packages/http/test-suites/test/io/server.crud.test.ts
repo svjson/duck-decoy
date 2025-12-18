@@ -3,8 +3,8 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { HTTP_ADAPTERS } from '../adapters'
 
 import { DecoyServer, makeDecoyServer } from 'duck-decoy'
-import { ANIMAL_SPECIES_RECORDS } from '../record-fixtures'
 import { makeTestClient, TestHttpClient } from '../http-client-fixtures'
+import { ANIMAL_SPECIES_RECORDS } from '../record-fixtures'
 
 describe('Decoy Server', () => {
   HTTP_ADAPTERS.forEach((transport) => {
