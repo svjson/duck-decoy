@@ -1,0 +1,2 @@
+export { KnexCollection } from './collection';
+
