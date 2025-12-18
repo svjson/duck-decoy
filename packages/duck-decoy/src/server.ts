@@ -199,8 +199,42 @@ export class DecoyServer<State extends DefaultState> {
   /**
    * Reset/clear the request log of this instance
    */
-  reset() {
-    this.requestLog.reset()
+  async reset(selection?: {
+    log?: boolean
+    state?: Record<string, boolean>
+  }): Promise<void> {
+    if (!selection) {
+      selection = {
+        log: true,
+        state: Object.keys(this.state).reduce(
+          (collState, stateKey) => {
+            if (
+              Object.hasOwn(this.state, stateKey) &&
+              this.state[stateKey] instanceof RecordCollection
+            ) {
+              collState[stateKey] = true
+            }
+            return collState
+          },
+          {} as Record<string, boolean>
+        ),
+      }
+    }
+
+    if (selection.log) {
+      this.requestLog.reset()
+    }
+
+    if (selection.state) {
+      await Promise.all(
+        Object.entries(selection.state)
+          .filter(
+            ([stateKey, stateVal]) =>
+              stateVal && this.state[stateKey] instanceof RecordCollection
+          )
+          .map(([stateKey, _]) => (this.state[stateKey] as RecordCollection).reset())
+      )
+    }
   }
 
   /**

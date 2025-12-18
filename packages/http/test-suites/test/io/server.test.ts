@@ -1,7 +1,7 @@
 import { HTTP_ADAPTERS } from '../adapters'
 
-import { afterEach, describe, expect, it } from 'vitest'
 import { DecoyServer, makeDecoyServer } from 'duck-decoy'
+import { afterEach, describe, expect, it } from 'vitest'
 import { makeTestClient } from '../http-client-fixtures'
 
 HTTP_ADAPTERS.forEach((transport) => {

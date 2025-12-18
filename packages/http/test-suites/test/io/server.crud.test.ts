@@ -29,7 +29,7 @@ describe('Decoy Server', () => {
         })
 
         afterEach(async () => {
-          server.reset()
+          await server.reset({ log: true })
         })
 
         ANIMAL_SPECIES_RECORDS.forEach((record) => {
