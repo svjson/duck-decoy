@@ -1,6 +1,11 @@
+import { EndpointHandlerParams, EndpointsConfiguration } from '@src/endpoint'
+import {
+  ArrayCollection,
+  makeDecoyServer,
+  preHandlerEnabled,
+  RequestPreHandler,
+} from '@src/index'
 import { describe, expect, it } from 'vitest'
-import { makeDecoyServer, preHandlerEnabled, RequestPreHandler } from '@src/index'
-import { EndpointsConfiguration, EndpointHandlerParams } from '@src/endpoint'
 import { TestHttpTransport } from '../transport-fixtures'
 
 describe('preHandlerEnabled', () => {
@@ -43,64 +48,93 @@ describe('preHandlerEnabled', () => {
 })
 
 describe('makeDecoyServer', () => {
-  it('should expose configured endpoints as routes after construction', async () => {
-    // Given
-    const transport = new TestHttpTransport()
+  describe('Route construction', () => {
+    it('should expose configured endpoints as routes after construction', async () => {
+      // Given
+      const transport = new TestHttpTransport()
 
-    // When
-    const server = await makeDecoyServer({
-      impl: transport,
-      endpoints: {
-        '/auth/session': {
-          method: 'POST',
-          handler: async ({ response }: EndpointHandlerParams) => {
-            response.encode()
+      // When
+      const server = await makeDecoyServer({
+        impl: transport,
+        endpoints: {
+          '/auth/session': {
+            method: 'POST',
+            handler: async ({ response }: EndpointHandlerParams) => {
+              response.encode()
+            },
           },
-        },
-      } satisfies EndpointsConfiguration<any>,
-    })
+        } satisfies EndpointsConfiguration<any>,
+      })
 
-    // Then
-    expect(server.routes).toEqual([
-      {
-        routeId: '/auth/session-POST',
-        method: 'POST',
-        path: '/auth/session',
-        handler: expect.any(Function),
-        responseFormatter: undefined,
-      },
-    ])
-  })
-
-  it('should expose configured routes after construction', async () => {
-    // Given
-    const transport = new TestHttpTransport()
-
-    // When
-    const server = await makeDecoyServer({
-      impl: transport,
-      routes: [
+      // Then
+      expect(server.routes).toEqual([
         {
           routeId: '/auth/session-POST',
           method: 'POST',
           path: '/auth/session',
-          handler: async ({ response }: EndpointHandlerParams) => {
-            response.encode()
-          },
+          handler: expect.any(Function),
           responseFormatter: undefined,
         },
-      ],
+      ])
     })
 
-    // Then
-    expect(server.routes).toEqual([
-      {
-        routeId: '/auth/session-POST',
-        method: 'POST',
-        path: '/auth/session',
-        handler: expect.any(Function),
-        responseFormatter: undefined,
-      },
-    ])
+    it('should expose configured routes after construction', async () => {
+      // Given
+      const transport = new TestHttpTransport()
+
+      // When
+      const server = await makeDecoyServer({
+        impl: transport,
+        routes: [
+          {
+            routeId: '/auth/session-POST',
+            method: 'POST',
+            path: '/auth/session',
+            handler: async ({ response }: EndpointHandlerParams) => {
+              response.encode()
+            },
+            responseFormatter: undefined,
+          },
+        ],
+      })
+
+      // Then
+      expect(server.routes).toEqual([
+        {
+          routeId: '/auth/session-POST',
+          method: 'POST',
+          path: '/auth/session',
+          handler: expect.any(Function),
+          responseFormatter: undefined,
+        },
+      ])
+    })
+  })
+
+  describe('Extension', () => {
+    it('should extend DuckDecoy server according to `extend` option', async () => {
+      // Given
+      const transport = new TestHttpTransport()
+
+      // When
+      const server = await makeDecoyServer({
+        impl: transport,
+        state: {
+          objects: new ArrayCollection<Object>(),
+        },
+        extend: {
+          value: 'abc',
+          async injectObject(obj: Object) {
+            return await this.state.objects.insert(obj)
+          },
+        },
+      })
+
+      // Then - this does not type error
+      expect(typeof server.injectObject).toEqual('function')
+      expect(typeof server.value).toEqual('string')
+      server.injectObject({})
+      expect(server.value).toEqual('abc')
+    })
   })
 })

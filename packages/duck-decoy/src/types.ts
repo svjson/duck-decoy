@@ -2,6 +2,17 @@ import { EndpointHandlerParams } from './endpoint'
 
 export type DefaultState = Record<string, unknown>
 
+/**
+ * Type utility used to hammer in the type of local 'this' in
+ * methods injected onto DecoyServer via 'extend'
+ *
+ * @template This The type to use for 'this' in the extended methods
+ */
+export type ExtendMethods<This> = Record<
+  string,
+  ((this: This, ...args: any[]) => any) | any
+>
+
 export type RequestPreHandlerFunction<State> = (
   params: EndpointHandlerParams<State>
 ) => Promise<void>

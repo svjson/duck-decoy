@@ -5,7 +5,7 @@ import { DuckDecoyHttpTransport, resolveHttpTransport } from './http'
 import { RequestLog } from './log'
 import { DuckDecoyPlugin } from './plugin'
 import { RouteDef } from './route'
-import { DefaultState, RequestPreHandler } from './types'
+import { DefaultState, ExtendMethods, RequestPreHandler } from './types'
 
 /**
  * Configuration type specifying the the behavior, state and shape of
@@ -25,8 +25,15 @@ interface DuckDecoyServerConfigParams<State extends DefaultState> {
 /**
  * Configuration type specifying the the behavior, state and shape of
  * of a DuckDecoy instance with optional properties.
+ *
+ * @template State Type of the mock/fake state object
+ * @template E Additional extension properties/methods to add to
+ *             the DecoyServer instance
  */
-type DuckDecoyServerConfig<State extends DefaultState> = {
+type DuckDecoyServerConfig<
+  State extends DefaultState = DefaultState,
+  E extends Record<string, any> = {},
+> = {
   impl?: string | DuckDecoyHttpTransport
   root?: string
   state?: State
@@ -36,6 +43,7 @@ type DuckDecoyServerConfig<State extends DefaultState> = {
   plugins?: DuckDecoyPlugin[]
   port?: number
   autostart?: boolean
+  extend?: ExtendMethods<DecoyServer<State> & E> & E
 }
 
 /**
@@ -271,16 +279,26 @@ export class DecoyServer<State extends DefaultState> {
  * fakeServerInstance.reset() should be called after each test to
  * clear all logged requests.
  */
-export const createFakeServer = async <State extends DefaultState>(
-  config: DuckDecoyServerConfig<State> = {}
-) => {
+export const createFakeServer = async <
+  E extends ExtendMethods<DecoyServer<State> & any> = {},
+  State extends DefaultState = DefaultState,
+  ServerType = DecoyServer<State> & E,
+>(
+  config: DuckDecoyServerConfig<State, E> = {}
+): Promise<ServerType> => {
   const serverConfig = await materializeConfiguration(config)
   const server = new DecoyServer(serverConfig)
+
+  if (config.extend) {
+    for (const [k, v] of Object.entries(config.extend)) {
+      ; (server as any)[k] = typeof v === 'function' ? (v as Function).bind(server) : v
+    }
+  }
 
   if (config.autostart) {
     await server.start()
   }
-  return server
+  return server as ServerType
 }
 
 export const makeDecoyServer = createFakeServer
