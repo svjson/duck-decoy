@@ -131,18 +131,49 @@ export class ArrayCollection<
   }
 
   /**
+   * Private utility function that finds a record index by its identity
+   *
+   * @param criteria Identity value
+   * @return Index of the record in the collection array, or -1 if not found
+   */
+  private findIndexByIdentity(criteria: RecordCriteria<IdentityType>): number {
+    const identity = coerce<IdentityType>(criteria)
+    if (identity == null) return -1
+    return this.records.findIndex(
+      (r) => r[this.identity] === coerce(criteria, r[this.identity])
+    )
+  }
+
+  /**
+   * Private utility function that finds the index of the first record
+   * matching the provided criteria or query.
+   *
+   * @param criteria Criteria or query to match records.
+   * @return Index of the first matching record, or -1 if none matched.
+   */
+  private async findFirstIndex(
+    criteria?: Query<T> | RecordCriteria<IdentityType>
+  ): Promise<number> {
+    if (criteria == null) return 0
+
+    const indexByIdentity = this.findIndexByIdentity(
+      criteria as RecordCriteria<IdentityType>
+    )
+    if (indexByIdentity !== -1) return indexByIdentity
+
+    const match = filterQuery(this.records, criteria as Query<T>)[0]
+    if (!match) return -1
+    return this.findIndexByIdentity(match[this.identity] as IdentityType)
+  }
+
+  /**
    * Private utility function that locates a single record by
    * criteria along with its index in the collection array
    */
   private async findOneByCriteria(
-    criteria?: RecordCriteria<IdentityType>
+    criteria?: Query<T> | RecordCriteria<IdentityType>
   ): Promise<[number, T | None]> {
-    const index =
-      criteria === null || criteria === undefined
-        ? 0
-        : this.records.findIndex(
-          (r) => r[this.identity] === coerce(criteria, r[this.identity])
-        )
+    const index = await this.findFirstIndex(criteria)
 
     if (index === -1) return [-1, this.none]
 

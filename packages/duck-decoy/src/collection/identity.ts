@@ -17,7 +17,7 @@ export const makeAutoIncGenerator = (records: any[], identity: string) => {
   }
 }
 
-export const coerce = <Type>(fromValue: any, toTypeOf: Type): Type | undefined => {
+export const coerce = <Type>(fromValue: any, toTypeOf?: Type): Type | undefined => {
   if (typeof fromValue === typeof toTypeOf) {
     return fromValue as Type
   }

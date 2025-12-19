@@ -123,6 +123,28 @@ describe('ArrayCollection', () => {
       // Then
       expect(result).toBeUndefined()
     })
+
+    it('should return only match of field combination', async () => {
+      // Given
+      const coll = new ArrayCollection(ANIMAL_SPECIES_RECORDS)
+
+      // When
+      const result = await coll.findOne({ legs: 4, diet: 'Herbivore' })
+
+      // Then
+      expect(result).toEqual(ANIMAL_SPECIES_RECORDS[4])
+    })
+
+    it('should return first match of field combination', async () => {
+      // Given
+      const coll = new ArrayCollection(ANIMAL_SPECIES_RECORDS)
+
+      // When
+      const result = await coll.findOne({ legs: 4, diet: 'Carnivore' })
+
+      // Then
+      expect(result).toEqual(ANIMAL_SPECIES_RECORDS[1])
+    })
   })
 
   describe('insert', () => {
