@@ -1,5 +1,13 @@
-import { RouteDef } from './route'
-import { DecoyServer } from './server'
+import {
+  DynamicRouteDef,
+  isDynamicRoute,
+  isStaticDirectoryRoute,
+  isStaticFileRoute,
+  RouteDef,
+  StaticDirectoryRouteDef,
+  StaticFileRouteDef,
+} from './route'
+import { DecoyServer, preHandlerEnabled } from './server'
 import { DefaultState } from './types'
 
 export type HttpMethod = 'GET' | 'PUT' | 'POST' | 'DELETE' | 'HEAD' | 'OPTIONS' | 'PATCH'
@@ -19,14 +27,169 @@ export const METHODS: HttpMethod[] = [
  * HTTP libraries, e.g, Fastify
  */
 export interface DuckDecoyHttpTransport {
+  /**
+   * The HTTP transport implementation
+   */
   name: string
+
+  /**
+   * Register a logical DuckDecoy RouteDef onto the HTTP transport
+   * implementation.
+   *
+   * @param route - The RouteDef to register
+   * @param dd - The DecoyServer instance the route is being registered onto
+   */
   registerRoute<State extends DefaultState>(
     route: RouteDef<State>,
     dd: DecoyServer<State>
   ): void
+
+  /**
+   * Start the HTTP server
+   */
   start(opts: HttpServerStartOptions): Promise<void>
+
+  /**
+   * Shutdown the HTTP server
+   */
   shutdown(): Promise<void>
+
+  /**
+   * Get the port the HTTP server is listening on
+   */
   port(): number
+}
+
+/**
+ * Abstract base class serving as the abstraction of an Http Transport with
+ * default implementations of common methods
+ *
+ * If viable for an HTTP transport implementation, it should extend this class
+ * rather than implementing the DuckDecoyHttpTransport interface directly.
+ */
+export abstract class BaseDuckDecoyHttpTransport implements DuckDecoyHttpTransport {
+  constructor(public name: string) {}
+
+  /**
+   * Register a logical DuckDecoy RouteDef onto the HTTP transport
+   */
+  registerRoute<State extends DefaultState>(
+    route: RouteDef<State>,
+    dd: DecoyServer<State>
+  ) {
+    if (isDynamicRoute(route)) {
+      this.registerDynamicRoute(route, dd)
+    } else if (isStaticFileRoute(route)) {
+      this.registerStaticFileRoute(route, dd)
+    } else if (isStaticDirectoryRoute(route)) {
+      this.registerStaticDirectoryRoute(route, dd)
+    }
+  }
+
+  /**
+   * Template method to register a dynamic route
+   */
+  protected abstract registerDynamicRoute<State extends DefaultState>(
+    route: DynamicRouteDef<State>,
+    dd: DecoyServer<State>
+  ): void
+
+  /**
+   * Template method to register a static file route
+   */
+  protected abstract registerStaticFileRoute<State extends DefaultState>(
+    route: StaticFileRouteDef,
+    dd: DecoyServer<State>
+  ): void
+
+  /**
+   * Template method to register a static directory route
+   */
+  protected abstract registerStaticDirectoryRoute<State extends DefaultState>(
+    route: StaticDirectoryRouteDef,
+    dd: DecoyServer<State>
+  ): void
+
+  /**
+   * Default implementation of a dynamic route handler.
+   *
+   * A HTTP transport implementation may call this after constructing
+   * its request/response adapters.
+   *
+   * Usage across implementations guarantees consistent request
+   * handlig logic.
+   *
+   * @param route - The DynamicRouteDef being handled
+   * @param dd - The DecoyServer instance the route is being handled on
+   * @param request - The DuckDecoyRequest instance
+   * @param response - The DuckDecoyResponse instance
+   */
+  protected async handleDynamicRequest<State extends DefaultState>(
+    route: DynamicRouteDef<State>,
+    dd: DecoyServer<State>,
+    request: DuckDecoyRequest,
+    response: DuckDecoyResponse
+  ): Promise<void> {
+    const logEntry = dd.requestLog.logRequest(request, route)
+    try {
+      await this.runPreHandlers(route, dd, request, response)
+      if (response.isEncoded()) return
+
+      await route.handler({
+        request,
+        response,
+        state: dd.state,
+      })
+    } catch (e) {
+      logEntry.error = `${e}`
+      response.status(500).body({ error: String(e) })
+    } finally {
+      logEntry.statusCode = response.statusCode
+    }
+
+    if (route.responseFormatter) {
+      const formatted = await route.responseFormatter({
+        payload: response._body,
+        request,
+        response,
+        state: dd.state,
+      })
+      response.body(formatted)
+    }
+
+    response.encode()
+  }
+
+  async runPreHandlers<State extends DefaultState>(
+    route: DynamicRouteDef<State>,
+    dd: DecoyServer<State>,
+    request: DuckDecoyRequest,
+    response: DuckDecoyResponse
+  ): Promise<void> {
+    for (const preHandler of dd.preHandlers) {
+      if (preHandlerEnabled(preHandler, route.path)) {
+        await preHandler.handler({
+          request,
+          response,
+          state: dd.state,
+        })
+
+        if (response.isEncoded()) {
+          return
+        }
+      }
+    }
+  }
+
+  start(_opts: HttpServerStartOptions): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+  shutdown(): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+  port(): number {
+    throw new Error('Method not implemented.')
+  }
 }
 
 /**

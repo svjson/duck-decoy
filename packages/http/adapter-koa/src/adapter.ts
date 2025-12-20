@@ -1,18 +1,13 @@
 import bodyParser from '@koa/bodyparser'
 import KoaRouter from '@koa/router'
 import {
+  BaseDuckDecoyHttpTransport,
   DecoyServer,
   DefaultState,
-  DuckDecoyHttpTransport,
   DuckDecoyRequest,
   DuckDecoyResponse,
   DynamicRouteDef,
   HttpServerStartOptions,
-  isDynamicRoute,
-  isStaticDirectoryRoute,
-  isStaticFileRoute,
-  preHandlerEnabled,
-  RouteDef,
   StaticDirectoryRouteDef,
   StaticFileRouteDef,
   urlpath,
@@ -35,13 +30,23 @@ const stripHead = (router: any) => {
   })
 }
 
-export class DuckDecoyKoa implements DuckDecoyHttpTransport {
-  name = 'koa'
+/**
+ * Koa-implementation of `DuckDecoyHttpTransport`
+ *
+ * Uses `koa-static` to serve static files and directories, and relies
+ * on the route handling and body parsing of `@koa/router` and `@koa/bodyparser`
+ * for dynamic routes, which are served using the base implementation of
+ * handleDynamicRequest from BaseDuckDecoyHttpTransport.
+ *
+ * @see DuckDecoyHttpTransport
+ */
+export class DuckDecoyKoa extends BaseDuckDecoyHttpTransport {
   koa: Koa
   router: KoaRouter = new KoaRouter()
   server: Server | undefined
 
   constructor() {
+    super('koa')
     this.koa = new Koa()
     this.koa.use(
       bodyParser({
@@ -69,19 +74,14 @@ export class DuckDecoyKoa implements DuckDecoyHttpTransport {
     return (this.server?.address() as any).port
   }
 
-  registerRoute<State extends DefaultState>(
-    route: RouteDef<State>,
-    dd: DecoyServer<State>
-  ) {
-    if (isDynamicRoute(route)) {
-      this.registerDynamicRoute(route, dd)
-    } else if (isStaticFileRoute(route)) {
-      this.registerStaticFileRoute(route, dd)
-    } else if (isStaticDirectoryRoute(route)) {
-      this.registerStaticDirectoryRoute(route, dd)
-    }
-  }
-
+  /**
+   * Register a static file route using `koa-send`
+   *
+   * @param route The static file route definition
+   * @param dd The DecoyServer instance
+   *
+   * @see BaseDuckDecoyHttpTransport.registerStaticFileRoute
+   */
   registerStaticFileRoute<State extends DefaultState>(
     route: StaticFileRouteDef,
     dd: DecoyServer<State>
@@ -94,6 +94,14 @@ export class DuckDecoyKoa implements DuckDecoyHttpTransport {
     })
   }
 
+  /**
+   * Register a static directory route using `koa-static`
+   *
+   * @param route The static directory route definition
+   * @param dd The DecoyServer instance
+   *
+   * @see BaseDuckDecoyHttpTransport.registerStaticDirectoryRoute
+   */
   registerStaticDirectoryRoute<State extends DefaultState>(
     route: StaticDirectoryRouteDef,
     dd: DecoyServer<State>
@@ -108,6 +116,14 @@ export class DuckDecoyKoa implements DuckDecoyHttpTransport {
     this.koa.use(mount(routePath, serve(route.staticRoot, { index })))
   }
 
+  /**
+   * Register a dynamic route
+   *
+   * @param route The dynamic route definition
+   * @param dd The DecoyServer instance
+   *
+   * @see BaseDuckDecoyHttpTransport.registerDynamicRoute
+   */
   registerDynamicRoute<State extends DefaultState>(
     route: DynamicRouteDef<State>,
     dd: DecoyServer<State>
@@ -122,51 +138,18 @@ export class DuckDecoyKoa implements DuckDecoyHttpTransport {
       async (ctx: Context) => {
         const ddRequest = new KoaDDRequest(ctx)
         const ddResponse = new KoaDDResponse(ctx)
-        const logEntry = dd.requestLog.logRequest(ddRequest, route)
-        try {
-          for (const preHandler of dd.preHandlers) {
-            if (preHandlerEnabled(preHandler, route.path)) {
-              await preHandler.handler({
-                request: ddRequest,
-                response: ddResponse,
-                state: dd.state,
-              })
-
-              if (ddResponse.isEncoded()) {
-                return
-              }
-            }
-          }
-
-          await route.handler({
-            request: ddRequest,
-            response: ddResponse,
-            state: dd.state,
-          })
-          logEntry.statusCode = ddResponse.statusCode
-        } catch (e) {
-          logEntry.error = `${e}`
-          logEntry.statusCode = 500
-          ddResponse.status(500).body({ error: String(e) })
-        }
-
-        if (route.responseFormatter) {
-          const formatted = await route.responseFormatter({
-            payload: ddResponse._body,
-            request: ddRequest,
-            response: ddResponse,
-            state: dd.state,
-          })
-          ddResponse.body(formatted)
-        }
-
-        ddResponse.encode()
+        await this.handleDynamicRequest(route, dd, ddRequest, ddResponse)
       }
     )
     stripHead(this.router)
   }
 }
 
+/**
+ * DuckDecoyRequest adapter for Koa's Context
+ *
+ * @see DuckDecoyRequest
+ */
 export class KoaDDRequest extends DuckDecoyRequest {
   constructor(private ctx: Context) {
     super()
@@ -189,6 +172,11 @@ export class KoaDDRequest extends DuckDecoyRequest {
   }
 }
 
+/**
+ * DuckDecoyResponse adapter for Koa's Context
+ *
+ * @see DuckDecoyResponse
+ */
 export class KoaDDResponse extends DuckDecoyResponse {
   constructor(private ctx: Context) {
     super()

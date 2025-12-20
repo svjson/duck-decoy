@@ -1,18 +1,13 @@
 import '@fastify/static'
 import fastifyStatic, { FastifyStaticOptions } from '@fastify/static'
 import {
+  BaseDuckDecoyHttpTransport,
   DecoyServer,
   DefaultState,
-  DuckDecoyHttpTransport,
   DuckDecoyRequest,
   DuckDecoyResponse,
   DynamicRouteDef,
   HttpServerStartOptions,
-  isDynamicRoute,
-  isStaticDirectoryRoute,
-  isStaticFileRoute,
-  preHandlerEnabled,
-  RouteDef,
   StaticDirectoryRouteDef,
   StaticFileRouteDef,
   urlpath,
@@ -22,12 +17,19 @@ import path from 'node:path'
 
 /**
  * Fastify-implementation of `DuckDecoyHttpTransport`
+ *
+ * Uses @fastify/static to serve static files and directories, and relies
+ * on Fastify's route handling for dynamic routes, which are served using
+ * the base implementation of handleDynamicRequest from
+ * BaseDuckDecoyHttpTransport.
+ *
+ * @see DuckDecoyHttpTransport
  */
-export class DuckDecoyFastify implements DuckDecoyHttpTransport {
-  name = 'fastify'
+export class DuckDecoyFastify extends BaseDuckDecoyHttpTransport {
   fastify: FastifyInstance
 
   constructor() {
+    super('fastify')
     this.fastify = Fastify()
     this.fastify.register(fastifyStatic, {
       root: path.resolve(import.meta.url),
@@ -47,19 +49,14 @@ export class DuckDecoyFastify implements DuckDecoyHttpTransport {
     return (this.fastify.server.address() as any).port
   }
 
-  registerRoute<State extends DefaultState>(
-    route: RouteDef<State>,
-    dd: DecoyServer<State>
-  ) {
-    if (isDynamicRoute(route)) {
-      this.registerDynamicRoute(route, dd)
-    } else if (isStaticFileRoute(route)) {
-      this.registerStaticFileRoute(route, dd)
-    } else if (isStaticDirectoryRoute(route)) {
-      this.registerStaticDirectoryRoute(route, dd)
-    }
-  }
-
+  /**
+   * Register a static file route using `@fastify/static`
+   *
+   * @param route The static file route definition
+   * @param dd The DecoyServer instance
+   *
+   * @see BaseDuckDecoyHttpTransport.registerStaticFileRoute
+   */
   registerStaticFileRoute<State extends DefaultState>(
     route: StaticFileRouteDef,
     dd: DecoyServer<State>
@@ -70,6 +67,14 @@ export class DuckDecoyFastify implements DuckDecoyHttpTransport {
     })
   }
 
+  /**
+   * Register a static directory route using `@fastify/static`
+   *
+   * @param route The static directory route definition
+   * @param dd The DecoyServer instance
+   *
+   * @see BaseDuckDecoyHttpTransport.registerStaticDirectoryRoute
+   */
   registerStaticDirectoryRoute<State extends DefaultState>(
     route: StaticDirectoryRouteDef,
     dd: DecoyServer<State>
@@ -90,6 +95,14 @@ export class DuckDecoyFastify implements DuckDecoyHttpTransport {
     })
   }
 
+  /**
+   * Register a dynamic route
+   *
+   * @param route The dynamic route definition
+   * @param dd The DecoyServer instance
+   *
+   * @see BaseDuckDecoyHttpTransport.registerDynamicRoute
+   */
   registerDynamicRoute<State extends DefaultState>(
     route: DynamicRouteDef<State>,
     dd: DecoyServer<State>
@@ -101,50 +114,17 @@ export class DuckDecoyFastify implements DuckDecoyHttpTransport {
       handler: async (req, reply) => {
         const ddRequest = new FastifyDDRequest(req)
         const ddResponse = new FastifyDDResponse(reply)
-        const logEntry = dd.requestLog.logRequest(ddRequest, route)
-        try {
-          for (const preHandler of dd.preHandlers) {
-            if (preHandlerEnabled(preHandler, route.path)) {
-              await preHandler.handler({
-                request: ddRequest,
-                response: ddResponse,
-                state: dd.state,
-              })
-
-              if (ddResponse.isEncoded()) {
-                return
-              }
-            }
-          }
-
-          await route.handler({
-            request: ddRequest,
-            response: ddResponse,
-            state: dd.state,
-          })
-          logEntry.statusCode = ddResponse.statusCode
-        } catch (e) {
-          logEntry.error = `${e}`
-          logEntry.statusCode = 500
-          ddResponse.status(500).body({ error: String(e) })
-        }
-
-        if (route.responseFormatter) {
-          const formatted = await route.responseFormatter({
-            payload: ddResponse._body,
-            request: ddRequest,
-            response: ddResponse,
-            state: dd.state,
-          })
-          ddResponse.body(formatted)
-        }
-
-        ddResponse.encode()
+        await this.handleDynamicRequest(route, dd, ddRequest, ddResponse)
       },
     })
   }
 }
 
+/**
+ * DuckDecoyRequest adapter for FastifyRequest
+ *
+ * @see DuckDecoyRequest
+ */
 export class FastifyDDRequest extends DuckDecoyRequest {
   constructor(private req: FastifyRequest) {
     super()
@@ -167,6 +147,11 @@ export class FastifyDDRequest extends DuckDecoyRequest {
   }
 }
 
+/**
+ * DuckDecoyResponse adapter for FastifyReply
+ *
+ * @see DuckDecoyResponse
+ */
 export class FastifyDDResponse extends DuckDecoyResponse {
   constructor(private reply: FastifyReply) {
     super()

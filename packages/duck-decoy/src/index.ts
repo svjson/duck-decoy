@@ -1,5 +1,5 @@
 export { ArrayCollection, RecordCollection } from './collection'
-export { DuckDecoyRequest, DuckDecoyResponse } from './http'
+export { BaseDuckDecoyHttpTransport, DuckDecoyRequest, DuckDecoyResponse } from './http'
 export { RequestLog } from './log'
 export {
   isDynamicRoute,
