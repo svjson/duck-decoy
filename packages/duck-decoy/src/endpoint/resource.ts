@@ -1,4 +1,4 @@
-import { RecordCollection, WithoutIdentity } from '../collection/collection'
+import { RecordCollection, WithoutIdentity } from '../collection'
 import { HttpMethod } from '@src/http'
 import { DynamicRouteDef } from '@src/route'
 import { formatUri } from './endpoint'

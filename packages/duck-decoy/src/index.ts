@@ -5,22 +5,26 @@ export {
   isDynamicRoute,
   isStaticDirectoryRoute,
   isStaticFileRoute,
-  urlpath
+  urlpath,
 } from './route'
 export {
   createFakeServer,
   DecoyServer,
   makeDecoyServer,
-  preHandlerEnabled
+  preHandlerEnabled,
 } from './server'
+export { AsyncEventEmitter } from './event'
 export { each, from } from './state'
 export { datesBetween } from './types'
 
 export type {
   DefaultRecordKey,
+  DeleteEvent,
+  InsertEvent,
   Query,
   RecordCriteria,
-  WithoutIdentity
+  UpdateEvent,
+  WithoutIdentity,
 } from './collection'
 export type {
   EndpointConfiguration,
@@ -28,7 +32,7 @@ export type {
   EndpointHandlerFunction,
   EndpointHandlerParams,
   EndpointResponseFormatter,
-  EndpointsConfiguration
+  EndpointsConfiguration,
 } from './endpoint'
 export type { DuckDecoyHttpTransport, HttpServerStartOptions } from './http'
 export type { RequestLogEntry } from './log'
@@ -38,7 +42,6 @@ export type {
   RouteDef,
   RouteDocumentation,
   StaticDirectoryRouteDef,
-  StaticFileRouteDef
+  StaticFileRouteDef,
 } from './route'
 export type { DefaultState, RequestPreHandler, RequestPreHandlerFunction } from './types'
-

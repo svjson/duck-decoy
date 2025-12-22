@@ -130,9 +130,11 @@ export class KnexCollection<
   /**
    * Delete first record matching a criteria and return the deleted record, if any.
    *
-   * @see RecordCollection.deleteOne
+   * @see RecordCollection.performDeleteOne
    */
-  async deleteOne(criteria?: IdentityType): Promise<T | None> {
+  protected override async performDeleteOne(
+    criteria?: RecordCriteria<IdentityType>
+  ): Promise<T | None> {
     const row = await this.findOne(criteria)
     if (row === this.none || row === undefined || row === null) return row
 
@@ -150,9 +152,11 @@ export class KnexCollection<
   /**
    * Insert a record into this collection.
    *
-   * @see RecordCollection.insert
+   * @see RecordCollection.performInsert
    */
-  async insert(record: T | WithoutIdentity<T, IdentityKey>): Promise<T> {
+  protected override async performInsert(
+    record: T | WithoutIdentity<T, IdentityKey>
+  ): Promise<T> {
     const objProperties = Object.keys(record as any)
     if (!objProperties.includes(String(this.identity))) {
       objProperties.unshift(String(this.identity))
@@ -209,9 +213,9 @@ export class KnexCollection<
   /**
    * Update a single record matching the provided criteria, if any.
    *
-   * @see RecordCollection.updateOne
+   * @see RecordCollection.performUpdateOne
    */
-  async updateOne(
+  protected override async performUpdateOne(
     criteria: IdentityType,
     record: WithoutIdentity<T, IdentityKey>
   ): Promise<T | None> {

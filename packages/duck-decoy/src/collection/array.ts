@@ -1,9 +1,5 @@
-import {
-  DefaultRecordKey,
-  RecordCollection,
-  RecordCriteria,
-  WithoutIdentity,
-} from './collection'
+import { RecordCollection } from './collection'
+import { DefaultRecordKey, RecordCriteria, WithoutIdentity } from './types'
 import { coerce, IdGenerator, makeAutoIncGenerator } from './identity'
 import { filterQuery, Query } from './query'
 
@@ -93,9 +89,9 @@ export class ArrayCollection<
   }
 
   /**
-   * @see RecordCollection.deleteOne
+   * @see RecordCollection.performDeleteOne
    */
-  async deleteOne(criteria?: RecordCriteria<IdentityType>) {
+  override async performDeleteOne(criteria?: RecordCriteria<IdentityType>) {
     const [index, match] = await this.findOneByCriteria(criteria)
 
     if (index !== -1) {
@@ -106,15 +102,15 @@ export class ArrayCollection<
   }
 
   /**
-   * @see RecordCollection.insert
+   * @see RecordCollection.performInsert
    */
-  async insert(record: T | WithoutIdentity<T, IdentityKey>): Promise<T> {
+  override async performInsert(record: T | WithoutIdentity<T, IdentityKey>): Promise<T> {
     const newRecord: T = Object.keys(record as any).includes(this.identity as string)
       ? (record as T)
       : ({
-        ...record,
-        [this.config.identity]: (await this.idGenerator.next()) as IdentityType,
-      } as T)
+          ...record,
+          [this.config.identity]: (await this.idGenerator.next()) as IdentityType,
+        } as T)
     this.records.push(newRecord)
     return newRecord
   }
@@ -189,9 +185,9 @@ export class ArrayCollection<
   }
 
   /**
-   * @see RecordCollection.updateOne
+   * @see RecordCollection.performUpdateOne
    */
-  async updateOne(
+  async performUpdateOne(
     criteria: RecordCriteria<IdentityType>,
     record: WithoutIdentity<T, IdentityKey>
   ): Promise<T | None> {

@@ -1,5 +1,13 @@
 type ValueOf<T> = T[keyof T]
 
+export interface AnimalSpecies {
+  id: number
+  name: string
+  class: string
+  diet: string
+  legs: number
+}
+
 export const ANIMAL_SPECIES_RECORDS = [
   {
     id: 1,
