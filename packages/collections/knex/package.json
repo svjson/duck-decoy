@@ -24,6 +24,7 @@
   },
   "scripts": {
     "build": "pnpm typecheck && tsup",
+    "ci:test": "vitest run --reporter=dot --no-color",
     "lint": "pnpm exec eslint .",
     "prepack": "pnpm build",
     "test": "vitest run --reporter verbose",

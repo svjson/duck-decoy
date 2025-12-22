@@ -38,6 +38,8 @@ jobs:
         include:
           - pkg: packages/duck-decoy
             name: "duck-decoy"
+          - pkg: packages/collections/knex
+          - name: "@duck-decoy/collections-knex"
           - pkg: packages/http/adapter-fastify
             name: "@duck-decoy/fastify"
           - pkg: packages/http/adapter-koa
@@ -81,7 +83,7 @@ jobs:
           fi
 
           echo "Publishing ${PKG}..."
-          npm publish --access public
+          pnpm publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
