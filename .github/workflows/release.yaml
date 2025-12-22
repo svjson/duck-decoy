@@ -39,7 +39,7 @@ jobs:
           - pkg: packages/duck-decoy
             name: "duck-decoy"
           - pkg: packages/collections/knex
-          - name: "@duck-decoy/collections-knex"
+            name: "@duck-decoy/collections-knex"
           - pkg: packages/http/adapter-fastify
             name: "@duck-decoy/fastify"
           - pkg: packages/http/adapter-koa
@@ -83,7 +83,7 @@ jobs:
           fi
 
           echo "Publishing ${PKG}..."
-          pnpm publish
+          pnpm publish --no-git-checks
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
