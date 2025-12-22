@@ -1,6 +1,6 @@
 import knex, { Knex } from 'knex'
 import { execSync } from 'node:child_process'
-import { afterAll, beforeAll } from 'vitest'
+import { beforeAll } from 'vitest'
 
 const ensureSQLServer = () => {
   execSync('docker compose up -d sql', {

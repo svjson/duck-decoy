@@ -1,3 +1,3 @@
 export * from './types'
 export * from './endpoint'
-export * from './resource'
+export { ResourceRouteBuilder } from './resource'

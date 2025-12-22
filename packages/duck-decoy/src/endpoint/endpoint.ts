@@ -21,6 +21,20 @@ export const formatUri = (uri: string) => {
 }
 
 /**
+ * Check if all array elements fulfill the DynamicRouteDef shape
+ *
+ * @param array - The array to check
+ * @return True if all elements are DynamicRouteDef, false otherwise
+ */
+const isRouteDefArray = (array: any[]) => {
+  if (!array.length) return false
+
+  return array.reduce((result, next) => {
+    return result && next && typeof next.handler === 'function'
+  }, true)
+}
+
+/**
  * Create basic CRUD routes for the supplied collection of `records` at `uri`.
  *
  * This will create the following routes:
@@ -104,6 +118,9 @@ const buildDeclaredEndpointRoutes = <State>(
   declaration: EndpointConfiguration<State>
 ): DynamicRouteDef<State>[] => {
   if (Array.isArray(declaration)) {
+    if (isRouteDefArray(declaration)) {
+      return declaration
+    }
     return buildCRUDRoutes(uri, declaration)
   }
 

@@ -13,6 +13,7 @@ export {
   makeDecoyServer,
   preHandlerEnabled,
 } from './server'
+export { ResourceRouteBuilder } from './endpoint'
 export { AsyncEventEmitter } from './event'
 export { each, from } from './state'
 export { datesBetween } from './types'
