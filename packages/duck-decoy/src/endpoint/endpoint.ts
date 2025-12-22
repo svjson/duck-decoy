@@ -10,6 +10,7 @@ import { HttpMethod } from '@src/http'
 import { ArrayCollection } from '@src/collection'
 import { ResourceRouteBuilder } from './resource'
 import { RouteDocumentation } from '@src/route/types'
+import { RequestPreHandlerFunction } from '@src/types'
 
 /**
  * Ensure that a route URI has a leading /
@@ -59,17 +60,22 @@ const makeEndpoint = <State>(
   uri: string,
   handler: EndpointHandlerFunction<State>,
   opts: {
+    preHandler?: RequestPreHandlerFunction<State>
     responseFormatter?: EndpointResponseFormatter<State>
     docs?: RouteDocumentation
   } = {}
 ): DynamicRouteDef<State> => {
-  const { responseFormatter, docs } = opts
+  const { preHandler, responseFormatter, docs } = opts
 
   const route: DynamicRouteDef<State> = {
     routeId: `${uri}-${method}`,
     method: method,
     path: formatUri(uri),
     handler: handler,
+  }
+
+  if (preHandler) {
+    route.preHandler = preHandler
   }
 
   if (responseFormatter) {
@@ -113,6 +119,7 @@ const buildDeclaredEndpointRoutes = <State>(
     const decl = declaration as EndpointDeclaration<State>
     return [
       makeEndpoint<State>(decl.method ?? 'GET', uri, decl.handler, {
+        preHandler: decl.preHandler,
         responseFormatter: decl.formatter,
         docs: decl.docs,
       }),

@@ -291,7 +291,7 @@ export const createFakeServer = async <
 
   if (config.extend) {
     for (const [k, v] of Object.entries(config.extend)) {
-      ; (server as any)[k] = typeof v === 'function' ? (v as Function).bind(server) : v
+      ;(server as any)[k] = typeof v === 'function' ? (v as Function).bind(server) : v
     }
   }
 

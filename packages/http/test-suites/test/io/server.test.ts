@@ -7,7 +7,7 @@ import { makeTestClient } from '../http-client-fixtures'
 HTTP_ADAPTERS.forEach((transport) => {
   describe('Decoy Server', () => {
     describe.sequential('Simple Config', () => {
-      let server: DecoyServer<any> | null
+      let server!: DecoyServer<any>
       const simpleSuccessPayload = {
         status: 'success',
         message: 'This is a test message',
@@ -16,7 +16,6 @@ HTTP_ADAPTERS.forEach((transport) => {
       afterEach(async () => {
         if (server) {
           await server.shutdown()
-          server = null
         }
       })
 
@@ -28,6 +27,7 @@ HTTP_ADAPTERS.forEach((transport) => {
             'success-message': simpleSuccessPayload,
           },
         })
+
         await server.start()
 
         // When

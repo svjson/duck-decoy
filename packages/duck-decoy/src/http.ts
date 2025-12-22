@@ -157,16 +157,38 @@ export abstract class BaseDuckDecoyHttpTransport implements DuckDecoyHttpTranspo
       response.body(formatted)
     }
 
-    response.encode()
+    if (!response.isEncoded()) {
+      response.encode()
+    }
   }
 
+  /**
+   * Execute any configured pre-handlers that applies to `route`
+   * for a request/response cycle.
+   *
+   * Server-global pre-handlers are executed first, and
+   * any preHandler defined on the route itself is executed
+   * last.
+   *
+   * If any preHandler encodes the response, the execution
+   * is immediately cancelled and no further preHandlers will
+   * run for this request.
+   *
+   * @param route - The DynamicRouteDef being handled
+   * @param dd - The DecoyServer instance the route is being handled on
+   * @param request - The DuckDecoyRequest instance
+   * @param response - The DuckDecoyResponse instance
+   */
   async runPreHandlers<State extends DefaultState>(
     route: DynamicRouteDef<State>,
     dd: DecoyServer<State>,
     request: DuckDecoyRequest,
     response: DuckDecoyResponse
   ): Promise<void> {
-    for (const preHandler of dd.preHandlers) {
+    for (const preHandler of [
+      ...dd.preHandlers,
+      ...(route.preHandler ? [{ handler: route.preHandler }] : []),
+    ]) {
       if (preHandlerEnabled(preHandler, route.path)) {
         await preHandler.handler({
           request,
@@ -181,12 +203,22 @@ export abstract class BaseDuckDecoyHttpTransport implements DuckDecoyHttpTranspo
     }
   }
 
+  /**
+   * Start the HTTP server
+   */
   start(_opts: HttpServerStartOptions): Promise<void> {
     throw new Error('Method not implemented.')
   }
+  /**
+   * Shutdown the HTTP server
+   */
   shutdown(): Promise<void> {
     throw new Error('Method not implemented.')
   }
+
+  /**
+   * Get the port the HTTP server is listening on
+   */
   port(): number {
     throw new Error('Method not implemented.')
   }
